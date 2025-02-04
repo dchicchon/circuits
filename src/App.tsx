@@ -6,6 +6,7 @@ import Palette from './components/Palette';
 import './App.css';
 import Wrapper from './components/Wrapper';
 import Canvas from './components/Canvas';
+import Debug from './components/Debug';
 
 const darkTheme = createTheme({
   palette: {
@@ -28,6 +29,7 @@ function App() {
       <Wrapper>
         <Palette />
         <Canvas />
+        <Debug />
       </Wrapper>
     </ThemeProvider>
   );

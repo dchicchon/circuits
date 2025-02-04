@@ -11,11 +11,11 @@ import { modes } from './modes';
  */
 
 // a node is an item that is on the page
-interface Node {
-  type: string;
-  data: object;
-  canvasRef: FabricObject;
-}
+// interface Node {
+//   type: string;
+//   data: object;
+//   canvasRef: FabricObject;
+// }
 
 interface State {
   selected: string | null;
@@ -46,37 +46,44 @@ export const useStore = create<State>((set, get) => ({
   addCircuitNode: (mousePos: Point) =>
     set((state) => {
       if (state.canvas) {
-        const id = nanoid();
-        const node = {
-          ref: new Circle({
-            radius: 10,
-            fill: 'white',
-            top: mousePos.y,
-            left: mousePos.x,
-            id,
-          }),
-        };
+        // const id = nanoid();
+        // const node = {
+        //   ref: new Circle({
+        //     radius: 10,
+        //     fill: 'white',
+        //     top: mousePos.y,
+        //     left: mousePos.x,
+        //     id,
+        //   }),
+        // };
 
-        node.ref.on('selected', () => {
-          state.setSelected(id);
-        });
+        // lets do our own thing
+        // node.ref.on('mousedown:before', () => {
+        //   console.log('selected node');
+        //   // how do I add a ring around to
+        //   // specify selection?
+        //   //   state.setSelected(id);
+        // });
+
+        // node.ref.on('selected', () => {
+        //   state.setSelected(id);
+        // });
 
         // figure out how to add this to all
-        node.ref.setControlsVisibility({
-          mt: false,
-          mb: false,
-          ml: false,
-          mr: false,
-          bl: false,
-          br: false,
-          tl: false,
-          tr: false,
-          mtr: false,
-        });
+        // node.ref.setControlsVisibility({
+        //   mt: false,
+        //   mb: false,
+        //   ml: false,
+        //   mr: false,
+        //   bl: false,
+        //   br: false,
+        //   tl: false,
+        //   tr: false,
+        //   mtr: false,
+        // });
         state.canvas.add(node.ref);
         state.items[id] = node;
       }
-      console.log(state.items);
       return {
         items: state.items,
       };
@@ -108,10 +115,11 @@ export const useStore = create<State>((set, get) => ({
       };
     }),
 
-  //   we need a way to detect shortcuts too
+  // do actions with the canvas
   canvasAction: (mousePos: Point) => {
     const mode = get().mode;
     const addCircuitNode = get().addCircuitNode;
+    const setSelected = get().setSelected;
     // we should have an action tree to complete on the canvas
     switch (mode) {
       case modes.ADD_CIRCUIT_NODE:

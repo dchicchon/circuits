@@ -9,16 +9,18 @@ export interface Nodes {
 interface NodeData {
   pos: Q5.Vector;
   boundary: string;
-  diameter?: number;
   width?: number;
   height?: number;
+}
+
+interface CircleData extends NodeData {
+  diameter: number;
 }
 
 export class Drawing {
   nodes: Nodes;
   sketch: Q5;
-  hovered: string | null;
-  selected: string | null;
+  hovered: string;
   mainSketch: HTMLElement | null;
   debug: boolean;
   height: number;
@@ -36,8 +38,10 @@ export class Drawing {
     this.sketch.mouseClicked = () => {
       this.mouseClicked();
     };
-    this.selected = null;
-    this.hovered = null;
+    this.sketch.mouseDragged = () => {
+      this.mouseDragged();
+    };
+    this.hovered = '';
     this.nodes = useStore.getState().nodes;
     this.mainSketch = document.getElementById('main_sketch');
     this.debug = true;
@@ -51,7 +55,7 @@ export class Drawing {
   }
 
   setup() {
-    this.sketch.frameRate(10);
+    // this.sketch.frameRate(10);
     this.sketch.stroke('white');
     this.sketch.strokeWeight(1);
   }
@@ -63,17 +67,31 @@ export class Drawing {
 
   mouseClicked() {
     const mode = useStore.getState().mode;
+    const selected = useStore.getState().selected;
     if (mode === modes.SELECT) {
-      if (this.hovered === this.selected) {
-        this.selectNode('');
-      } else if (this.hovered) {
+      if (this.hovered !== selected) {
         this.selectNode(this.hovered);
       } else {
-        this.selectNode('');
+        // this.selectNode('');
       }
     } else if (mode === modes.ADD_CIRCUIT_NODE) {
       this.addCircuitNode(this.sketch.mouseX, this.sketch.mouseY);
     }
+  }
+
+  mouseDragged() {
+    const mode = useStore.getState().mode;
+    // const selected = useStore.getState().selected;
+    if (mode === modes.SELECT) {
+      if (this.hovered) {
+        // this.selectNode(this.hovered);
+        this.dragNode(this.hovered);
+      }
+    }
+  }
+
+  dragNode(id: string) {
+    this.nodes[id].pos = this.vector(this.sketch.mouseX, this.sketch.mouseY);
   }
 
   selectNode(id: string) {
@@ -84,7 +102,7 @@ export class Drawing {
   // we want to save our nodes in our store
   // todo: should nodes draw themselves? might be easier?
   drawNodes() {
-    this.hovered = null;
+    this.hovered = '';
     this.sketch.cursor(this.sketch.ARROW);
     Object.keys(this.nodes).forEach((id) => {
       const node = this.nodes[id];
@@ -94,12 +112,11 @@ export class Drawing {
       if (node.boundary === 'rect') {
         this.sketch[node.boundary](node.pos.x, node.pos.y, node.width, node.height);
       }
-      if (node.isHovered(this.sketch.mouseX, this.sketch.mouseY)) {
+      if (this.isHovering(node)) {
         this.hovered = node.id;
         this.sketch.cursor(this.sketch.HAND);
       }
       // todo: add dashed lines around this
-
       const selected = useStore.getState().selected;
       if (node.id === selected) {
         this.sketch.push();
@@ -113,6 +130,21 @@ export class Drawing {
     });
   }
 
+  isHovering(node: Node): boolean {
+    const mousePos = this.mousePos();
+    if (node.boundary === 'circle') {
+      const dist = mousePos.dist(node.pos).toFixed(2);
+      if (dist < node.diameter / 2) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  mousePos() {
+    return this.sketch.createVector(this.sketch.mouseX, this.sketch.mouseY);
+  }
+
   /**
    * A node can be selectable.
    * A node must have an assigned shape
@@ -123,16 +155,17 @@ export class Drawing {
 
   deleteNode(id: string) {
     delete this.nodes[id];
+    this.selectNode('');
   }
 
-  createVector(x: number, y: number) {
+  vector(x: number, y: number) {
     return this.sketch.createVector(x, y);
   }
 
   addCircuitNode(x: number, y: number) {
     const node = new Node({
       boundary: 'circle',
-      pos: this.createVector(x, y),
+      pos: this.vector(x, y),
       diameter: 25,
     });
     this.addNode(node);
@@ -170,6 +203,7 @@ export class Node {
   }
 
   isHovered(mouseX: number, mouseY: number): boolean {
+    // this is a dynamic thing we should check
     if (
       mouseX > this.minX &&
       mouseX < this.maxX &&
@@ -179,5 +213,14 @@ export class Node {
       return true;
     }
     return false;
+  }
+}
+
+export class Circle extends Node {
+  diameter: number;
+
+  constructor(data: CircleData) {
+    super(data);
+    this.diameter = data.diameter;
   }
 }

@@ -3,6 +3,7 @@ import { useStore } from '@/utils/store';
 
 function Debug() {
   const mode = useStore((state) => state.mode);
+  const selected = useStore((state) => state.selected);
   return (
     <Paper
       sx={{
@@ -17,6 +18,7 @@ function Debug() {
       <Stack>
         <Typography>Debug Tester</Typography>
         <Typography>Mode: {mode}</Typography>
+        <Typography>Selected: {selected}</Typography>
       </Stack>
     </Paper>
   );

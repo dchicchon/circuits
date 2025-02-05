@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import PolylineIcon from '@mui/icons-material/Polyline';
@@ -21,7 +22,7 @@ function Palette() {
   return (
     <Box
       sx={{
-        border: '1px solid white',
+        // border: '1px solid white',
         borderRadius: 2,
         position: 'absolute',
         top: 75,
@@ -33,53 +34,55 @@ function Palette() {
         zIndex: 2,
       }}
     >
-      <Stack direction="row" spacing={1}>
-        <Tooltip title="Select">
-          <IconButton
-            onClick={() => {
-              setMode(modes.SELECT);
-            }}
-            aria-label={modes.SELECT}
-          >
-            <BackHandIcon color={mode === modes.SELECT ? 'primary' : 'inherit'} />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Create Circuit Node">
-          <IconButton
-            onClick={() => {
-              setMode(modes.ADD_CIRCUIT_NODE);
-            }}
-            aria-label={modes.ADD_CIRCUIT_NODE}
-          >
-            <PolylineIcon
-              color={mode === modes.ADD_CIRCUIT_NODE ? 'primary' : 'inherit'}
-            />
-          </IconButton>
-        </Tooltip>
+      <Paper elevation={5}>
+        <Stack direction="row" spacing={1}>
+          <Tooltip title="Select">
+            <IconButton
+              onClick={() => {
+                setMode(modes.SELECT);
+              }}
+              aria-label={modes.SELECT}
+            >
+              <BackHandIcon color={mode === modes.SELECT ? 'primary' : 'inherit'} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Create Circuit Node">
+            <IconButton
+              onClick={() => {
+                setMode(modes.ADD_CIRCUIT_NODE);
+              }}
+              aria-label={modes.ADD_CIRCUIT_NODE}
+            >
+              <PolylineIcon
+                color={mode === modes.ADD_CIRCUIT_NODE ? 'primary' : 'inherit'}
+              />
+            </IconButton>
+          </Tooltip>
 
-        <Tooltip title="Connect Circuit Node">
-          <IconButton
-            onClick={() => {
-              setMode(modes.CONNECT_CIRCUIT_NODE);
-            }}
-            aria-label={modes.CONNECT_CIRCUIT_NODE}
-          >
-            <FiberSmartRecordIcon
-              color={mode === modes.CONNECT_CIRCUIT_NODE ? 'primary' : 'inherit'}
-            />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton
-            onClick={() => {
-              deleteNode();
-            }}
-            aria-label={modes.CONNECT_CIRCUIT_NODE}
-          >
-            <DeleteIcon color={'inherit'} />
-          </IconButton>
-        </Tooltip>
-      </Stack>
+          <Tooltip title="Connect Circuit Node">
+            <IconButton
+              onClick={() => {
+                setMode(modes.CONNECT_CIRCUIT_NODE);
+              }}
+              aria-label={modes.CONNECT_CIRCUIT_NODE}
+            >
+              <FiberSmartRecordIcon
+                color={mode === modes.CONNECT_CIRCUIT_NODE ? 'primary' : 'inherit'}
+              />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton
+              onClick={() => {
+                deleteNode();
+              }}
+              aria-label={modes.CONNECT_CIRCUIT_NODE}
+            >
+              <DeleteIcon color={'inherit'} />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Paper>
     </Box>
   );
 }

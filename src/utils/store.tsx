@@ -38,7 +38,13 @@ export const useStore = create<State>((set, get) => ({
     // delete an item on the drawing?
   },
   mode: modes.SELECT,
-  setMode: (value: string) => set(() => ({ mode: value })),
+  setMode: (value: string) =>
+    set(() => {
+      return {
+        mode: value,
+        selected: '',
+      };
+    }),
 
   //   Messaging
   openBar: false,

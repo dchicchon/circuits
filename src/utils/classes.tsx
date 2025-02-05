@@ -8,13 +8,18 @@ export interface Nodes {
 }
 interface NodeData {
   pos: Q5.Vector;
-  boundary: string;
+  drawType: string;
   width?: number;
   height?: number;
 }
 
 interface CircleData extends NodeData {
   diameter: number;
+}
+interface LineData extends NodeData {
+  posNext: Q5.Vector;
+  prev: Node;
+  next: Node;
 }
 
 export class Drawing {
@@ -76,6 +81,14 @@ export class Drawing {
       }
     } else if (mode === modes.ADD_CIRCUIT_NODE) {
       this.addCircuitNode(this.sketch.mouseX, this.sketch.mouseY);
+    } else if (mode === modes.CONNECT_CIRCUIT_NODE) {
+      if (selected) {
+        // connect the already selected node to the current hovered one
+        this.linkCircuitNodes(this.nodes[this.hovered], this.nodes[selected]);
+        this.selectNode('');
+      } else if (this.hovered !== selected) {
+        this.selectNode(this.hovered);
+      }
     }
   }
 
@@ -104,13 +117,23 @@ export class Drawing {
   drawNodes() {
     this.hovered = '';
     this.sketch.cursor(this.sketch.ARROW);
+    // should a line be considered a node?
+    // lets just draw it for now
     Object.keys(this.nodes).forEach((id) => {
       const node = this.nodes[id];
-      if (node.boundary === 'circle') {
-        this.sketch[node.boundary](node.pos.x, node.pos.y, node.diameter);
+      if (node instanceof Circle) {
+        this.sketch[node.drawType](node.pos.x, node.pos.y, node.diameter);
       }
-      if (node.boundary === 'rect') {
-        this.sketch[node.boundary](node.pos.x, node.pos.y, node.width, node.height);
+      if (node instanceof Line) {
+        this.sketch[node.drawType](
+          node.prev.pos.x,
+          node.prev.pos.y,
+          node.next.pos.x,
+          node.next.pos.y
+        );
+      }
+      if (node.drawType === 'rect') {
+        this.sketch[node.drawType](node.pos.x, node.pos.y, node.width, node.height);
       }
       if (this.isHovering(node)) {
         this.hovered = node.id;
@@ -121,8 +144,8 @@ export class Drawing {
       if (node.id === selected) {
         this.sketch.push();
         this.sketch.noFill();
-        if (node.boundary === 'circle') {
-          this.sketch[node.boundary](node.pos.x, node.pos.y, node.diameter + 15);
+        if (node.drawType === 'circle') {
+          this.sketch[node.drawType](node.pos.x, node.pos.y, node.diameter + 15);
         }
         // draw selection around this
         this.sketch.pop();
@@ -132,7 +155,7 @@ export class Drawing {
 
   isHovering(node: Node): boolean {
     const mousePos = this.mousePos();
-    if (node.boundary === 'circle') {
+    if (node.drawType === 'circle') {
       const dist = mousePos.dist(node.pos).toFixed(2);
       if (dist < node.diameter / 2) {
         return true;
@@ -145,10 +168,6 @@ export class Drawing {
     return this.sketch.createVector(this.sketch.mouseX, this.sketch.mouseY);
   }
 
-  /**
-   * A node can be selectable.
-   * A node must have an assigned shape
-   */
   addNode(node: Node) {
     this.nodes[node.id] = node;
   }
@@ -163,64 +182,63 @@ export class Drawing {
   }
 
   addCircuitNode(x: number, y: number) {
-    const node = new Node({
-      boundary: 'circle',
+    const node = new Circle({
+      drawType: 'circle',
       pos: this.vector(x, y),
       diameter: 25,
     });
     this.addNode(node);
+  }
+
+  // todo: rather than linking circuit nodes, why not link
+  // todo: components together and thats the circuit?
+  linkCircuitNodes(node1: Node, node2: Node) {
+    // rather than doing this lets
+    // have our circuit nodes contain this information
+    // since it may be more pertinent to them? not sure
+    const line = new Line({
+      pos: node1.pos,
+      posNext: node2.pos,
+      prev: node1,
+      next: node2,
+      drawType: 'line',
+    });
+    this.addNode(line);
   }
 }
 
 export class Node {
   pos: Q5.Vector;
   id: string;
-  boundary: string;
+  drawType: string;
   width?: number;
   height?: number;
   diameter?: number | null;
-  minX: number;
-  maxX: number;
-  minY: number;
-  maxY: number;
 
   constructor(data: NodeData) {
     this.id = nanoid();
     this.pos = data.pos;
-    this.boundary = data.boundary;
-    if (this.boundary === 'circle' && data.diameter) {
-      this.diameter = data.diameter;
-      this.minX = this.pos.x - data.diameter / 2;
-      this.minY = this.pos.y - data.diameter / 2;
-      this.maxX = this.pos.x + data.diameter / 2;
-      this.maxY = this.pos.y + data.diameter / 2;
-    } else {
-      this.minX = this.pos.x;
-      this.minY = this.pos.y;
-      this.maxX = this.pos.x + data.width;
-      this.maxY = this.pos.y + data.height;
-    }
-  }
-
-  isHovered(mouseX: number, mouseY: number): boolean {
-    // this is a dynamic thing we should check
-    if (
-      mouseX > this.minX &&
-      mouseX < this.maxX &&
-      mouseY > this.minY &&
-      mouseY < this.maxY
-    ) {
-      return true;
-    }
-    return false;
+    this.drawType = data.drawType;
   }
 }
 
 export class Circle extends Node {
   diameter: number;
-
   constructor(data: CircleData) {
     super(data);
     this.diameter = data.diameter;
+  }
+}
+
+export class Line extends Node {
+  prev: Node;
+  next: Node;
+  posNext: Q5.Vector;
+
+  constructor(data: LineData) {
+    super(data);
+    this.prev = data.prev;
+    this.next = data.next;
+    this.posNext = data.next.pos;
   }
 }

@@ -6,7 +6,7 @@ import Palette from './components/Palette';
 import './App.css';
 import Wrapper from './components/Wrapper';
 import Canvas from './components/Canvas';
-import Debug from './components/Debug';
+import Debug from './components/SideMenu';
 
 const darkTheme = createTheme({
   palette: {

@@ -9,6 +9,8 @@ interface State {
   setSelectedComponent: (val: string) => void;
   selected: string;
   setSelected: (val: string) => void;
+  hovering: string;
+  setHovering: (val: string) => void;
   deleteNode: () => void;
   nodes: Nodes;
   setNodes: (id: string, node: Node) => void;
@@ -28,6 +30,8 @@ interface State {
 export const useStore = create<State>((set, get) => ({
   selectedComponent: '',
   setSelectedComponent: (val: string) => set(() => ({ selectedComponent: val })),
+  hovering: '',
+  setHovering: (val: string) => set(() => ({ hovering: val })),
   drawing: null,
   setDrawing: (val: Drawing) => set(() => ({ drawing: val })),
   nodes: {},

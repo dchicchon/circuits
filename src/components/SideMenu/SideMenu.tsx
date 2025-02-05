@@ -2,6 +2,8 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import Paper from '@mui/material/Paper';
 import { useStore } from '@/utils/store';
+import { useState } from 'react';
+import { modes } from '@/utils/modes';
 
 const componentList = [
   {
@@ -20,10 +22,27 @@ interface CircuitComponentProps {
 }
 
 function CircuitComponent(props: CircuitComponentProps) {
-  const selectComponent = () => {};
+  const [hover, setHover] = useState(false);
+  const setSelectedComponent = useStore((state) => state.setSelectedComponent);
+  const setMode = useStore((state) => state.setMode);
+
+  const selectComponent = () => {
+    setSelectedComponent(props.type);
+    setMode(modes.ADD_COMPONENT);
+  };
 
   return (
-    <Paper onClick={selectComponent} sx={{ p: 1, cursor: 'pointer' }} elevation={5}>
+    <Paper
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
+      onClick={selectComponent}
+      sx={{ p: 1, cursor: 'pointer' }}
+      elevation={hover ? 10 : 5}
+    >
       <Typography variant="body2">{props.type}</Typography>
     </Paper>
   );
@@ -49,8 +68,8 @@ function SideMenu() {
     >
       <Typography variant="h6">Components</Typography>
       <Stack gap={2}>
-        {componentList.map((comp) => (
-          <CircuitComponent type={comp.type} />
+        {componentList.map((comp, i) => (
+          <CircuitComponent key={i} type={comp.type} />
         ))}
       </Stack>
     </Paper>

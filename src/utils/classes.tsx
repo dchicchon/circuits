@@ -4,17 +4,20 @@ import { modes } from '@/utils/modes';
 import { nanoid } from 'nanoid';
 
 export interface Nodes {
-  [id: string]: Node;
+  [id: string]: Circle | Rect;
 }
 interface NodeData {
+  data: object;
   pos: Q5.Vector;
-  drawType: string;
-  width?: number;
-  height?: number;
+  drawType?: string;
 }
 
 interface CircleData extends NodeData {
   diameter: number;
+}
+interface RectData extends NodeData {
+  width: number;
+  height: number;
 }
 interface LineData extends NodeData {
   posNext: Q5.Vector;
@@ -34,18 +37,7 @@ export class Drawing {
 
   constructor() {
     this.sketch = new Q5();
-    this.sketch.draw = () => {
-      this.draw();
-    };
-    this.sketch.setup = () => {
-      this.setup();
-    };
-    this.sketch.mouseClicked = () => {
-      this.mouseClicked();
-    };
-    this.sketch.mouseDragged = () => {
-      this.mouseDragged();
-    };
+    this.setupListeners();
     this.hovered = '';
     this.nodes = useStore.getState().nodes;
     this.mainSketch = document.getElementById('main_sketch');
@@ -61,13 +53,61 @@ export class Drawing {
 
   setup() {
     // this.sketch.frameRate(10);
+    this.sketch.rectMode(this.sketch.CENTER);
     this.sketch.stroke('white');
     this.sketch.strokeWeight(1);
   }
 
   draw() {
     this.sketch.background('#242424');
+    this.drawSelectedComponent();
     this.drawNodes();
+  }
+
+  setupListeners() {
+    this.sketch.draw = () => {
+      this.draw();
+    };
+    this.sketch.setup = () => {
+      this.setup();
+    };
+    this.sketch.mouseClicked = () => {
+      this.mouseClicked();
+    };
+    this.sketch.mouseDragged = () => {
+      this.mouseDragged();
+    };
+    this.sketch.keyPressed = () => {
+      this.keyPressed();
+    };
+  }
+
+  drawSelectedComponent() {
+    const selectedComponent = useStore.getState().selectedComponent;
+    if (selectedComponent) {
+      const pos = this.mousePos();
+      this.sketch.push();
+      this.sketch.noFill();
+      this.sketch.rect(pos.x, pos.y, 25, 25);
+      this.sketch.pop();
+      // draw a rect on the canvas where the mouse is
+    }
+  }
+
+  keyPressed() {
+    const mode = useStore.getState().mode;
+    const setMode = useStore.getState().setMode;
+    const setSelectedComponent = useStore.getState().setSelectedComponent;
+
+    if (mode === modes.ADD_COMPONENT) {
+      // 8 and 27
+      const deletionCodes = [8, 27];
+      const keyCode = this.sketch.keyCode;
+      if (deletionCodes.includes(keyCode)) {
+        setSelectedComponent('');
+        setMode(modes.SELECT);
+      }
+    }
   }
 
   mouseClicked() {
@@ -79,8 +119,6 @@ export class Drawing {
       } else {
         // this.selectNode('');
       }
-    } else if (mode === modes.ADD_CIRCUIT_NODE) {
-      this.addCircuitNode(this.sketch.mouseX, this.sketch.mouseY);
     } else if (mode === modes.CONNECT_CIRCUIT_NODE) {
       if (selected) {
         // connect the already selected node to the current hovered one
@@ -89,7 +127,29 @@ export class Drawing {
       } else if (this.hovered !== selected) {
         this.selectNode(this.hovered);
       }
+    } else if (mode === modes.ADD_COMPONENT) {
+      this.addComponent();
     }
+  }
+
+  addComponent() {
+    const setMode = useStore.getState().setMode;
+    const setSelectedComponent = useStore.getState().setSelectedComponent;
+    const selectedComponent = useStore.getState().selectedComponent;
+
+    // we need to add the text of the selected component
+    // here somehow?
+    const rect = new Rect({
+      data: {
+        type: selectedComponent,
+      },
+      pos: this.mousePos(),
+      width: 24,
+      height: 24,
+    });
+    this.addNode(rect);
+    setMode(modes.SELECT);
+    setSelectedComponent('');
   }
 
   mouseDragged() {
@@ -97,7 +157,6 @@ export class Drawing {
     // const selected = useStore.getState().selected;
     if (mode === modes.SELECT) {
       if (this.hovered) {
-        // this.selectNode(this.hovered);
         this.dragNode(this.hovered);
       }
     }
@@ -123,18 +182,17 @@ export class Drawing {
       const node = this.nodes[id];
       if (node instanceof Circle) {
         this.sketch[node.drawType](node.pos.x, node.pos.y, node.diameter);
-      }
-      if (node instanceof Line) {
+      } else if (node instanceof Line) {
         this.sketch[node.drawType](
           node.prev.pos.x,
           node.prev.pos.y,
           node.next.pos.x,
           node.next.pos.y
         );
-      }
-      if (node.drawType === 'rect') {
+      } else if (node instanceof Rect) {
         this.sketch[node.drawType](node.pos.x, node.pos.y, node.width, node.height);
       }
+
       if (this.isHovering(node)) {
         this.hovered = node.id;
         this.sketch.cursor(this.sketch.HAND);
@@ -144,8 +202,15 @@ export class Drawing {
       if (node.id === selected) {
         this.sketch.push();
         this.sketch.noFill();
-        if (node.drawType === 'circle') {
+        if (node instanceof Circle) {
           this.sketch[node.drawType](node.pos.x, node.pos.y, node.diameter + 15);
+        } else if (node instanceof Rect) {
+          this.sketch[node.drawType](
+            node.pos.x,
+            node.pos.y,
+            node.width + 24,
+            node.height + 24
+          );
         }
         // draw selection around this
         this.sketch.pop();
@@ -155,11 +220,16 @@ export class Drawing {
 
   isHovering(node: Node): boolean {
     const mousePos = this.mousePos();
-    if (node.drawType === 'circle') {
+    if (node instanceof Circle) {
       const dist = mousePos.dist(node.pos).toFixed(2);
-      if (dist < node.diameter / 2) {
-        return true;
-      }
+      return dist < node.diameter / 2;
+    } else if (node instanceof Rect) {
+      return (
+        mousePos.x > node.pos.x - node.width / 2 &&
+        mousePos.x < node.pos.x + node.width / 2 &&
+        mousePos.y > node.pos.y - node.height / 2 &&
+        mousePos.y < node.pos.y + node.height / 2
+      );
     }
     return false;
   }
@@ -179,15 +249,6 @@ export class Drawing {
 
   vector(x: number, y: number) {
     return this.sketch.createVector(x, y);
-  }
-
-  addCircuitNode(x: number, y: number) {
-    const node = new Circle({
-      drawType: 'circle',
-      pos: this.vector(x, y),
-      diameter: 25,
-    });
-    this.addNode(node);
   }
 
   // todo: rather than linking circuit nodes, why not link
@@ -225,7 +286,10 @@ export class Node {
 export class Circle extends Node {
   diameter: number;
   constructor(data: CircleData) {
-    super(data);
+    super({
+      ...data,
+      drawType: 'circle',
+    });
     this.diameter = data.diameter;
   }
 }
@@ -240,5 +304,18 @@ export class Line extends Node {
     this.prev = data.prev;
     this.next = data.next;
     this.posNext = data.next.pos;
+  }
+}
+
+export class Rect extends Node {
+  width: number;
+  height: number;
+  constructor(props: RectData) {
+    super({
+      ...props,
+      drawType: 'rect',
+    });
+    this.width = props.width;
+    this.height = props.height;
   }
 }

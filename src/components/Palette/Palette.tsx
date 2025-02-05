@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import BackHandIcon from '@mui/icons-material/BackHand';
-import FiberSmartRecordIcon from '@mui/icons-material/FiberSmartRecord';
+// import FiberSmartRecordIcon from '@mui/icons-material/FiberSmartRecord';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useStore } from '../../utils/store';
 import { modes } from '../../utils/modes';
@@ -46,19 +46,6 @@ function Palette() {
               <BackHandIcon color={mode === modes.SELECT ? 'primary' : 'inherit'} />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Create Circuit Node">
-            <IconButton
-              onClick={() => {
-                setMode(modes.ADD_CIRCUIT_NODE);
-              }}
-              aria-label={modes.ADD_CIRCUIT_NODE}
-            >
-              <PolylineIcon
-                color={mode === modes.ADD_CIRCUIT_NODE ? 'primary' : 'inherit'}
-              />
-            </IconButton>
-          </Tooltip>
-
           <Tooltip title="Connect Circuit Node">
             <IconButton
               onClick={() => {
@@ -66,7 +53,7 @@ function Palette() {
               }}
               aria-label={modes.CONNECT_CIRCUIT_NODE}
             >
-              <FiberSmartRecordIcon
+              <PolylineIcon
                 color={mode === modes.CONNECT_CIRCUIT_NODE ? 'primary' : 'inherit'}
               />
             </IconButton>

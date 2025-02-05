@@ -5,6 +5,8 @@ import { modes } from './modes';
 interface State {
   drawing: Drawing | null;
   setDrawing: (val: Drawing) => void;
+  selectedComponent: string;
+  setSelectedComponent: (val: string) => void;
   selected: string;
   setSelected: (val: string) => void;
   deleteNode: () => void;
@@ -12,6 +14,8 @@ interface State {
   setNodes: (id: string, node: Node) => void;
   mode: string;
   setMode: (value: string) => void;
+
+  // snackbar
   openBar: boolean;
   setOpenBar: (value: boolean) => void;
   message: string;
@@ -22,6 +26,8 @@ interface State {
 }
 
 export const useStore = create<State>((set, get) => ({
+  selectedComponent: '',
+  setSelectedComponent: (val: string) => set(() => ({ selectedComponent: val })),
   drawing: null,
   setDrawing: (val: Drawing) => set(() => ({ drawing: val })),
   nodes: {},

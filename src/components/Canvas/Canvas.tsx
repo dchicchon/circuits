@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { Drawing } from '@/utils/classes';
 import { useStore } from '@/utils/store';
+
+import { Drawing } from '@/classes/Drawing/Drawing';
 
 function CanvasComp() {
   const setDrawing = useStore((state) => state.setDrawing);

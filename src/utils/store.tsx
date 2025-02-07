@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { Nodes, Node, Drawing } from './classes';
 import { modes } from './modes';
+import { CircuitLink, Links } from '@/classes/CircuitLink/CircuitLink';
+
+
 
 interface State {
   drawing: Drawing | null;
@@ -17,6 +20,8 @@ interface State {
   mode: string;
   setMode: (value: string) => void;
 
+  links: Links;
+  setLinks: (id: string, link: CircuitLink) => void;
   // snackbar
   openBar: boolean;
   setOpenBar: (value: boolean) => void;
@@ -36,6 +41,8 @@ export const useStore = create<State>((set, get) => ({
   setDrawing: (val: Drawing) => set(() => ({ drawing: val })),
   nodes: {},
   setNodes: () => set(() => ({})),
+  links: {},
+  setLinks: () => set(() => ({})),
   selected: '',
   setSelected: (id: string) =>
     set(() => ({

@@ -4,17 +4,18 @@ import Paper from '@mui/material/Paper';
 import { useStore } from '@/utils/store';
 import { useState } from 'react';
 import { modes } from '@/utils/modes';
+import { types } from '@/utils/types';
 
 const componentList = [
   {
-    type: 'battery',
+    type: types.BATTERY,
   },
   {
-    type: 'light',
+    type: types.LIGHT,
   },
-  {
-    type: 'resistor',
-  },
+  // {
+  //   type: 'resistor',
+  // },
 ];
 
 interface CircuitComponentProps {
@@ -51,8 +52,8 @@ function CircuitComponent(props: CircuitComponentProps) {
 // add multiple submenus for component inspect and
 // creating components
 function SideMenu() {
-  const mode = useStore((state) => state.mode);
-  const selected = useStore((state) => state.selected);
+  // const mode = useStore((state) => state.mode);
+  // const selected = useStore((state) => state.selected);
   return (
     <Paper
       elevation={5}

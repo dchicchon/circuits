@@ -5,22 +5,17 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import BackHandIcon from '@mui/icons-material/BackHand';
-// import FiberSmartRecordIcon from '@mui/icons-material/FiberSmartRecord';
+
 import { useStore } from '../../utils/store';
 import { modes } from '../../utils/modes';
-// import { modes } from '@/utils/modes';
-// import { useStore } from '@/utils/store';
 
 function Palette() {
-  // const successMessage = useStore((state) => state.successMessage);
-  // const errorMessage = useStore((state) => state.errorMessage);
   const setMode = useStore((state) => state.setMode);
   const mode = useStore((state) => state.mode);
 
   return (
     <Box
       sx={{
-        // border: '1px solid white',
         borderRadius: 2,
         position: 'absolute',
         top: 75,
@@ -32,7 +27,7 @@ function Palette() {
         zIndex: 2,
       }}
     >
-      <Paper elevation={5}>
+      <Paper sx={{ p: 0.5 }} elevation={5}>
         <Stack direction="row" spacing={1}>
           <Tooltip title="Select">
             <IconButton

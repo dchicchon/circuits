@@ -1,9 +1,18 @@
 import { Node, NodeProps } from '../Node/Node';
+import { CircuitLink } from '../CircuitLink/CircuitLink';
+
 import { modes } from '@/utils/modes';
 import { useStore } from '@/utils/store';
 
+export interface CircuitNodes {
+  [id: string]: CircuitNode;
+}
 interface CircuitNodeProps extends NodeProps {
   parentNode: Node;
+}
+
+interface Links {
+  [id: string]: CircuitLink;
 }
 
 export class CircuitNode extends Node {
@@ -12,12 +21,14 @@ export class CircuitNode extends Node {
   parentNode: Node;
 
   // ? Does this need to contain a direct reference to other objects or just need ids?
-  linked: Array<string>;
+  // linked: Array<string>;
+  links: Links;
   // linked: Array<CircuitNode>;
   constructor(props: CircuitNodeProps) {
     super(props);
     this.diameter = 15;
-    this.linked = [];
+    // this.linked = [];
+    this.links = {};
     this.parentNode = props.parentNode;
   }
 
@@ -41,7 +52,7 @@ export class CircuitNode extends Node {
     }
   }
 
-  isHovering() {
+  isHovering(): boolean {
     const mousePos = this.mousePos();
     const dist = mousePos.dist(this.pos).toFixed(2);
     return dist < this.diameter / 2;
@@ -59,12 +70,28 @@ export class CircuitNode extends Node {
     }
   }
 
-  hasLink(node: CircuitNode) {
-    return this.linked.some((link) => link === node.id);
+  hasLink(node: CircuitNode): boolean {
+    // for all links, check the links to see what nodes
+    // are connected
+    // todo: better yet do we need to have the linked nodes references here?
+    // todo: or do we just need the links?
+
+    return Object.keys(this.links).some((key) => {
+      const link = this.links[key];
+      return link.node1.id === node.id || link.node2.id === node.id;
+    });
+    // return this.links.some((link) => {
+    //   return link.node1.id === node.id || link.node2.id === node.id;
+    // });
+    // return this.linked.some((link) => link === node.id);
   }
 
-  //   add it to the list of connections
-  link(node: CircuitNode) {
-    this.linked.push(node.id);
+  deleteLink(removedLink: CircuitLink) {
+    delete this.links[removedLink.id];
+    // return this.links.filter((link) => link.id !== removedLink.id);
+  }
+
+  link(link: CircuitLink) {
+    this.links[link.id] = link;
   }
 }

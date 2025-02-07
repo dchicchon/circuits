@@ -1,3 +1,5 @@
+import Q5 from 'q5xjs';
+
 import { Node, NodeProps } from '../Node/Node';
 import { CircuitNode } from '../CircuitNode/CircuitNode';
 import { useStore } from '@/utils/store';
@@ -30,7 +32,13 @@ export class Component extends Node {
   }
 
   // todo: consider adding default draw function to all components?
+  // todo: Make class method
   draw() {}
+
+  // todo: Make class method
+  drag(arg: Q5.Vector) {
+    console.log(arg);
+  }
 
   isHovering() {
     const mousePos = this.mousePos();

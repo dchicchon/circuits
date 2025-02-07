@@ -21,7 +21,6 @@ export class Battery extends Component {
     this.height = 75;
     this.img = this.sketch.loadImage(battery);
 
-
     // TODO: Change the relative position on the component
     // TODO: so we don't have to rely on using const anode and cathode key names
     const anodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);

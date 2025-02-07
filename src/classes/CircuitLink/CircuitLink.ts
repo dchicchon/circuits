@@ -31,4 +31,9 @@ export class CircuitLink extends Node {
     );
     this.sketch.pop();
   }
+
+  removeNodes() {
+    this.node1.deleteLink(this);
+    this.node2.deleteLink(this);
+  }
 }

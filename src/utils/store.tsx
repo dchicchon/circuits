@@ -1,9 +1,9 @@
 import { create } from 'zustand';
-import { Nodes, Node, Drawing } from './classes';
 import { modes } from './modes';
 import { CircuitLink, Links } from '@/classes/CircuitLink/CircuitLink';
-
-
+import { Node } from '@/classes/Node/Node';
+import { Drawing } from '@/classes/Drawing/Drawing';
+import { Components } from '@/classes/Component/Component';
 
 interface State {
   drawing: Drawing | null;
@@ -14,14 +14,15 @@ interface State {
   setSelected: (val: string) => void;
   hovering: string;
   setHovering: (val: string) => void;
-  deleteNode: () => void;
-  nodes: Nodes;
-  setNodes: (id: string, node: Node) => void;
+  deleteSelectedComponent: () => void;
+  components: Components;
+  setComponents: (id: string, node: Node) => void;
   mode: string;
   setMode: (value: string) => void;
 
   links: Links;
   setLinks: (id: string, link: CircuitLink) => void;
+
   // snackbar
   openBar: boolean;
   setOpenBar: (value: boolean) => void;
@@ -39,8 +40,8 @@ export const useStore = create<State>((set, get) => ({
   setHovering: (val: string) => set(() => ({ hovering: val })),
   drawing: null,
   setDrawing: (val: Drawing) => set(() => ({ drawing: val })),
-  nodes: {},
-  setNodes: () => set(() => ({})),
+  components: {},
+  setComponents: () => set(() => ({})),
   links: {},
   setLinks: () => set(() => ({})),
   selected: '',
@@ -48,10 +49,10 @@ export const useStore = create<State>((set, get) => ({
     set(() => ({
       selected: id,
     })),
-  deleteNode: () => {
+  deleteSelectedComponent: () => {
     const drawing = get().drawing;
     const selected = get().selected;
-    drawing?.deleteNode(selected);
+    drawing?.deleteComponent(selected);
     // delete an item on the drawing?
   },
   mode: modes.SELECT,

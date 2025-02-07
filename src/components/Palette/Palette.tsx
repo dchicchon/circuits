@@ -6,7 +6,6 @@ import Tooltip from '@mui/material/Tooltip';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import BackHandIcon from '@mui/icons-material/BackHand';
 // import FiberSmartRecordIcon from '@mui/icons-material/FiberSmartRecord';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useStore } from '../../utils/store';
 import { modes } from '../../utils/modes';
 // import { modes } from '@/utils/modes';
@@ -17,7 +16,6 @@ function Palette() {
   // const errorMessage = useStore((state) => state.errorMessage);
   const setMode = useStore((state) => state.setMode);
   const mode = useStore((state) => state.mode);
-  const deleteNode = useStore((state) => state.deleteNode);
 
   return (
     <Box
@@ -56,16 +54,6 @@ function Palette() {
               <PolylineIcon
                 color={mode === modes.CONNECT_CIRCUIT_NODE ? 'primary' : 'inherit'}
               />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              onClick={() => {
-                deleteNode();
-              }}
-              aria-label={modes.CONNECT_CIRCUIT_NODE}
-            >
-              <DeleteIcon color={'inherit'} />
             </IconButton>
           </Tooltip>
         </Stack>

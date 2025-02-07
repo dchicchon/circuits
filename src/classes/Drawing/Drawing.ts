@@ -70,27 +70,31 @@ export class Drawing {
   }
 
   draw() {
-    this.sketch.background('#242424');
+    this.resetDraw();
     this.drawNodes();
     this.drawLinks();
   }
+
   drawNodes() {
-    // this.hovered = '';
-    this.sketch.cursor(this.sketch.ARROW);
-    const setHovering = useStore.getState().setHovering;
-    setHovering('');
-    // should a line be considered a node?
-    // lets just draw it for now
     Object.keys(this.nodes).forEach((id) => {
       const node = this.nodes[id];
       node.draw();
     });
   }
+
   drawLinks() {
     Object.keys(this.links).forEach((id) => {
       const link = this.links[id];
       link.draw();
     });
+  }
+
+  resetDraw() {
+    this.sketch.background('#242424');
+    // ? NEED THIS TO RESET SET HOVERED ITEM. CONSIDER REFACTORING?
+    this.sketch.cursor(this.sketch.ARROW);
+    const setHovering = useStore.getState().setHovering;
+    setHovering('');
   }
 
   keyPressed() {
@@ -222,36 +226,40 @@ export class Drawing {
   }
 
   deleteNode(id: string) {
-    delete this.nodes[id];
+    // in adddition to removing the node
+    // we should tell the node to dispose itself?
+    // actually we should check if this node
+    // has subnodes and remove them
+    const node = this.nodes[id];
+    if (node.subnodes) { // we know subnodes are circuit ndoes
+      Object.keys(node.subnodes).forEach((sub) => {
+        this.deleteNode(node.subnodes[sub].id);
+      });
+      delete this.nodes[id];
+    } else {
+      delete this.nodes[id];
+    }
     this.selectNode('');
   }
 
   // todo: rather than linking circuit nodes, why not link
   // todo: components together and thats the circuit?
   linkCircuitNodes(node1: CircuitNode, node2: CircuitNode) {
-    // check if links can connect with each other?
-    // node1.link(node2);
-    // node2.link(node1);
+    if (
+      node1.hasLink(node2) ||
+      node2.hasLink(node1) ||
+      node1.parentNode.id === node2.parentNode.id
+    ) {
+      console.log('already linked! or same parent');
+      return;
+    }
+    node1.link(node2);
+    node2.link(node1);
     const link = this.createLink({
       node1: node1,
       node2: node2,
     });
-    this.addLink(link);
-    // this.addNode(link);
-    // we should create a new node that links
-    // these two circuit nodes together?
-    // this link should be selectable?
 
-    // rather than doing this lets
-    // have our circuit nodes contain this information
-    // since it may be more pertinent to them? not sure
-    // const line = new Line({
-    //   pos: node1.pos,
-    //   posNext: node2.pos,
-    //   prev: node1,
-    //   next: node2,
-    //   drawType: 'line',
-    // });
-    // this.addNode(line);
+    this.addLink(link);
   }
 }

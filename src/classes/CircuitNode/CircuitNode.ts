@@ -10,7 +10,10 @@ export class CircuitNode extends Node {
   // piece of a component that connects to the circuit
   diameter: number;
   parentNode: Node;
-  linked: Array<CircuitNode>;
+
+  // ? Does this need to contain a direct reference to other objects or just need ids?
+  linked: Array<string>;
+  // linked: Array<CircuitNode>;
   constructor(props: CircuitNodeProps) {
     super(props);
     this.diameter = 15;
@@ -56,10 +59,12 @@ export class CircuitNode extends Node {
     }
   }
 
+  hasLink(node: CircuitNode) {
+    return this.linked.some((link) => link === node.id);
+  }
+
   //   add it to the list of connections
   link(node: CircuitNode) {
-    // when linking, lets make sure to not link
-    // to a circuit node with the same parent
-    if (node.parentNode.id === this.parentNode.id) return;
+    this.linked.push(node.id);
   }
 }

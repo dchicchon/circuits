@@ -5,7 +5,7 @@ import { Battery } from '../Battery/Battery';
 import { Light } from '../Light/Light';
 import { CircuitNode } from '../CircuitNode/CircuitNode';
 import { CircuitLink, Links } from '../CircuitLink/CircuitLink';
-import { Components } from '../Component/Component';
+import { Component, Components } from '../Component/Component';
 
 import { modes } from '@/utils/modes';
 import { types } from '@/utils/types';
@@ -21,7 +21,6 @@ interface createComponentProps {
 
 export class Drawing {
   components: Components;
-  // circuitNodes: CircuitNodes;
   links: Links;
   sketch: Q5;
   hovered: string;
@@ -49,6 +48,7 @@ export class Drawing {
       this.mainSketch.appendChild(this.canvas);
     }
   }
+
   setupListeners() {
     this.sketch.draw = () => {
       this.draw();
@@ -123,16 +123,16 @@ export class Drawing {
     const hovering = useStore.getState().hovering;
     const selected = useStore.getState().selected;
     if (mode === modes.SELECT) {
-      if (hovering !== selected) {
+      if (hovering !== selected?.id) {
         this.selectNode(hovering);
       } else {
         // this.selectNode('');
       }
     } else if (mode === modes.CONNECT_CIRCUIT_NODE) {
       if (selected && hovering) {
-        this.linkCircuitNodes(this.components[hovering], this.components[selected]);
+        this.linkCircuitNodes(this.components[hovering], selected);
         this.selectNode('');
-      } else if (hovering !== selected) {
+      } else if (hovering !== selected?.id) {
         this.selectNode(hovering);
       }
     } else if (mode === modes.ADD_COMPONENT) {
@@ -142,6 +142,7 @@ export class Drawing {
 
   mouseDragged() {
     const mode = useStore.getState().mode;
+    // only allow drag if dragged item is type component
     if (mode === modes.SELECT) {
       const hovering = useStore.getState().hovering;
       if (hovering) {
@@ -206,12 +207,22 @@ export class Drawing {
   dragComponent(id: string) {
     const nextPos = this.vector(this.sketch.mouseX, this.sketch.mouseY);
     const component = this.components[id];
-    component.drag(nextPos);
+    if (component) {
+      component.drag(nextPos);
+    }
   }
 
   selectNode(id: string) {
     const setSelected = useStore.getState().setSelected;
-    setSelected(id);
+    const component = this.components[id];
+    const link = this.links[id];
+    if (component) {
+      setSelected(component);
+    } else if (link) {
+      setSelected(link);
+    } else {
+      setSelected(null);
+    }
   }
 
   vector(x: number, y: number): Q5.Vector {
@@ -222,17 +233,13 @@ export class Drawing {
     return this.vector(this.sketch.mouseX, this.sketch.mouseY);
   }
 
-  // addNode(node: Battery | Light) {
-  //   // todo: Use setNodes from store here?
-  //   this.components[node.id] = node;
-  // }
-
   addLink(link: CircuitLink) {
     // todo: use setLinks from store here?
     this.links[link.id] = link;
   }
 
   deleteLink(link: CircuitLink) {
+    link.removeNodes();
     delete this.links[link.id];
   }
 
@@ -244,18 +251,14 @@ export class Drawing {
     delete this.components[circuitNode.id];
   }
 
-  deleteComponent(id: string) {
-    // in adddition to removing the node
-    // we should tell the node to dispose itself?
-    // actually we should check if this node
-    // has subnodes and remove them
-    const node = this.components[id];
-    if (node.subnodes) {
-      Object.keys(node.subnodes).forEach((sub) => {
-        this.deleteCircuitNode(node.subnodes[sub]);
+  deleteComponent(component: Component) {
+    if (component.subnodes) {
+      Object.keys(component.subnodes).forEach((sub) => {
+        this.deleteCircuitNode(component.subnodes[sub]);
       });
     }
-    delete this.components[id];
+
+    delete this.components[component.id];
     this.selectNode('');
   }
 

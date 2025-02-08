@@ -60,7 +60,7 @@ export class Component extends Node {
 
   drawSelection() {
     const selected = useStore.getState().selected;
-    if (this.id === selected) {
+    if (this.id === selected?.id) {
       this.sketch.push();
       this.sketch.noFill();
       this.sketch.rect(

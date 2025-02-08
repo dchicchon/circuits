@@ -52,7 +52,15 @@ function CircuitComponent(props: CircuitComponentProps) {
   return (
     <Tooltip title={props.type}>
       <Paper
-        sx={{ minWidth: 75, maxWidth: 75, p: 2, mx: 1, cursor: 'pointer', flexGrow: 1, flex: 1 }}
+        sx={{
+          minWidth: 75,
+          maxWidth: 75,
+          p: 2,
+          mx: 1,
+          cursor: 'pointer',
+          flexGrow: 1,
+          flex: 1,
+        }}
         onMouseEnter={() => {
           setHover(true);
         }}
@@ -82,7 +90,6 @@ function ComponentsList() {
 
 function InspectComponent() {
   const selected = useStore((state) => state.selected);
-  const components = useStore((state) => state.components);
   const deleteSelectedComponent = useStore((state) => state.deleteSelectedComponent);
   return (
     // consider creating columns or grid here?
@@ -91,7 +98,7 @@ function InspectComponent() {
       {selected && (
         <>
           {/* <Typography variant="body2">Selected Component: {selected} </Typography> */}
-          <Typography variant="body2"> Type: {components[selected].type} </Typography>
+          <Typography variant="body2"> Type: {selected.type} </Typography>
           {/* TODO: Show data for the selected component */}
           <Tooltip title="Delete">
             <IconButton

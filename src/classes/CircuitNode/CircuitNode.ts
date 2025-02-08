@@ -60,7 +60,7 @@ export class CircuitNode extends Node {
 
   drawSelection() {
     const selected = useStore.getState().selected;
-    if (this.id === selected) {
+    if (this.id === selected?.id) {
       this.sketch.push();
       this.sketch.strokeWeight(3);
       this.sketch.stroke('black');
@@ -88,7 +88,6 @@ export class CircuitNode extends Node {
 
   deleteLink(removedLink: CircuitLink) {
     delete this.links[removedLink.id];
-    // return this.links.filter((link) => link.id !== removedLink.id);
   }
 
   link(link: CircuitLink) {

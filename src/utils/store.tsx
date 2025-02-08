@@ -3,15 +3,16 @@ import { modes } from './modes';
 import { CircuitLink, Links } from '@/classes/CircuitLink/CircuitLink';
 import { Node } from '@/classes/Node/Node';
 import { Drawing } from '@/classes/Drawing/Drawing';
-import { Components } from '@/classes/Component/Component';
+import { Component, Components } from '@/classes/Component/Component';
 
 interface State {
   drawing: Drawing | null;
   setDrawing: (val: Drawing) => void;
   selectedComponent: string;
   setSelectedComponent: (val: string) => void;
-  selected: string;
-  setSelected: (val: string) => void;
+
+  selected: Node | null;
+  setSelected: (node: Node | null) => void;
   hovering: string;
   setHovering: (val: string) => void;
   deleteSelectedComponent: () => void;
@@ -44,16 +45,21 @@ export const useStore = create<State>((set, get) => ({
   setComponents: () => set(() => ({})),
   links: {},
   setLinks: () => set(() => ({})),
-  selected: '',
-  setSelected: (id: string) =>
+  selected: null,
+  setSelected: (node: Node) =>
     set(() => ({
-      selected: id,
+      selected: node,
     })),
   deleteSelectedComponent: () => {
+    // check the type of component we have.
     const drawing = get().drawing;
     const selected = get().selected;
-    drawing?.deleteComponent(selected);
-    // delete an item on the drawing?
+
+    if (selected instanceof Component) {
+      drawing?.deleteComponent(selected);
+    } else if (selected instanceof CircuitLink) {
+      drawing?.deleteLink(selected);
+    }
   },
   mode: modes.SELECT,
   setMode: (value: string) =>

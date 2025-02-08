@@ -21,11 +21,6 @@ export class Light extends Component {
     this.height = 75;
     this.borderRadius = 10;
     this.data = {
-      current: {
-        value: 0,
-        name: 'Current',
-        type: 'number',
-      },
       currentRating: {
         value: 0.02,
         name: 'Current Rating',
@@ -38,9 +33,10 @@ export class Light extends Component {
       },
     };
     this.img = this.sketch.loadImage(light);
-    const anodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
-    const cathodePos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+    const cathodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
+    const anodePos = this.vector(this.pos.x, this.pos.y + this.height / 2);
     const anode = new CircuitNode({
+      electrodeType: 'anode',
       type: types.CIRCUIT_NODE,
       pos: anodePos,
       sketch: this.sketch,
@@ -48,6 +44,7 @@ export class Light extends Component {
     });
     this.subnodes.anode = anode;
     const cathode = new CircuitNode({
+      electrodeType: 'cathode',
       type: types.CIRCUIT_NODE,
       pos: cathodePos,
       sketch: this.sketch,
@@ -73,8 +70,9 @@ export class Light extends Component {
 
   setPos(pos: Q5.Vector) {
     this.pos = pos;
-    this.subnodes.anode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
-    this.subnodes.cathode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+    this.subnodes.anode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+    this.subnodes.cathode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
+
   }
 
   drag(pos: Q5.Vector) {

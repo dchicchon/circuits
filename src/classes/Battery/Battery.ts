@@ -14,12 +14,8 @@ interface BatteryProps extends NodeProps {
   sketch: Q5;
 }
 
-
-
-
 // how you can modify the data
 export class Battery extends Component {
-
   constructor(data: BatteryProps) {
     super(data);
     this.subnodes = {};
@@ -44,9 +40,10 @@ export class Battery extends Component {
 
     // TODO: Change the relative position on the component
     // TODO: so we don't have to rely on using const anode and cathode key names
-    const anodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
-    const cathodePos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+    const cathodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
+    const anodePos = this.vector(this.pos.x, this.pos.y + this.height / 2);
     const anode = new CircuitNode({
+      electrodeType: 'anode',
       type: types.CIRCUIT_NODE,
       pos: anodePos,
       sketch: this.sketch,
@@ -54,6 +51,7 @@ export class Battery extends Component {
     });
     this.subnodes.anode = anode;
     const cathode = new CircuitNode({
+      electrodeType: 'cathode',
       type: types.CIRCUIT_NODE,
       pos: cathodePos,
       sketch: this.sketch,
@@ -83,8 +81,8 @@ export class Battery extends Component {
 
   setPos(pos: Q5.Vector) {
     this.pos = pos;
-    this.subnodes.anode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
-    this.subnodes.cathode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+    this.subnodes.anode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+    this.subnodes.cathode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
   }
 
   drag(pos: Q5.Vector) {

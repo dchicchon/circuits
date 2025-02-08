@@ -4,11 +4,14 @@ import { CircuitLink } from '../CircuitLink/CircuitLink';
 import { modes } from '@/utils/modes';
 import { useStore } from '@/utils/store';
 
+// should circuit nodes have a type as well? like anode,cathode?
 export interface CircuitNodes {
   [id: string]: CircuitNode;
 }
+
 interface CircuitNodeProps extends NodeProps {
   parentNode: Node;
+  electrodeType: 'anode' | 'cathode';
 }
 
 interface Links {
@@ -16,19 +19,21 @@ interface Links {
 }
 
 export class CircuitNode extends Node {
-  // piece of a component that connects to the circuit
+  // CATHODE - positive
+  // ANODE - negative
+  electrodeType: 'anode' | 'cathode';
   diameter: number;
   parentNode: Node;
 
   // ? Does this need to contain a direct reference to other objects or just need ids?
   // linked: Array<string>;
-  links: Links;
   // linked: Array<CircuitNode>;
+  links: Links;
   constructor(props: CircuitNodeProps) {
     super(props);
     this.diameter = 15;
-    // this.linked = [];
     this.links = {};
+    this.electrodeType = props.electrodeType;
     this.parentNode = props.parentNode;
   }
 
@@ -39,6 +44,11 @@ export class CircuitNode extends Node {
     this.sketch.strokeWeight(3);
     this.sketch.stroke('black');
     this.sketch.circle(this.pos.x, this.pos.y, this.diameter);
+    if (this.electrodeType === 'anode') {
+      this.sketch.text('--', this.pos.x - 4, this.pos.y + 3);
+    } else {
+      this.sketch.text('+', this.pos.x - 4, this.pos.y + 3);
+    }
     this.detectHover();
     this.sketch.pop();
     this.drawSelection();

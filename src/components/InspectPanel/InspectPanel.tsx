@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { NumberField } from '@base-ui-components/react/number-field';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
+import Stack from '@mui/material/Stack';
 
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
@@ -144,15 +145,17 @@ function InspectComponent({ component }: InspectComponentProps) {
         alignItems: 'center',
       }}
     >
-      <Box>
+      <Box sx={{ pt: 1 }}>
         <Typography variant="body2"> Type: {component.type} </Typography>
-        {Object.keys(component.data).map((key) => {
-          const dataObject = component.data[key];
-          if (dataObject.type === 'number') {
-            return <EditNumber key={key} dataObject={dataObject} />;
-          }
-          return <EditEnum key={key} dataObject={dataObject} />;
-        })}
+        <Stack sx={{ pt: 1 }} gap={2}>
+          {Object.keys(component.data).map((key) => {
+            const dataObject = component.data[key];
+            if (dataObject.type === 'number') {
+              return <EditNumber key={key} dataObject={dataObject} />;
+            }
+            return <EditEnum key={key} dataObject={dataObject} />;
+          })}
+        </Stack>
       </Box>
 
       {/* delete should be at the bottom */}

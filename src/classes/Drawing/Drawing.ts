@@ -77,8 +77,8 @@ export class Drawing {
 
   draw() {
     this.resetDraw();
-    this.drawComponents();
     this.drawLinks();
+    this.drawComponents();
   }
 
   drawComponents() {
@@ -132,16 +132,18 @@ export class Drawing {
         setMode(modes.SELECT);
       }
     } else if (mode === modes.SELECT) {
-      const selected = useStore.getState().selected;
-      const deletionCodes = [8, 27];
-      const keyCode = this.sketch.keyCode;
-      if (deletionCodes.includes(keyCode)) {
-        if (selected instanceof Component) {
-          this.deleteComponent(selected);
-        } else if (selected instanceof CircuitLink) {
-          this.deleteLink(selected);
-        }
-      }
+      // Todo: unable to implement if user is
+      // todo: editing value in inspect
+      // const selected = useStore.getState().selected;
+      // const deletionCodes = [8, 27];
+      // const keyCode = this.sketch.keyCode;
+      // if (deletionCodes.includes(keyCode)) {
+      //   if (selected instanceof Component) {
+      //     this.deleteComponent(selected);
+      //   } else if (selected instanceof CircuitLink) {
+      //     this.deleteLink(selected);
+      //   }
+      // }
     }
   }
 

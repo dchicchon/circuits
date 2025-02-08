@@ -21,13 +21,16 @@ export class Component extends Node {
   borderRadius: number;
   subnodes: SubNodes;
   img: object;
+  data: object;
 
   constructor(data: ComponentProps) {
     super(data);
     this.subnodes = {};
     this.img = {};
+    this.data = {};
     this.height = 0;
     this.width = 0;
+
     this.borderRadius = 10;
   }
 

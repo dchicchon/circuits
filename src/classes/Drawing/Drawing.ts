@@ -9,6 +9,7 @@ import { Component, Components } from '../Component/Component';
 
 import { modes } from '@/utils/modes';
 import { types } from '@/utils/types';
+import { Resistor } from '../Resistor/Resistor';
 
 interface createLinkProps {
   node1: CircuitNode;
@@ -96,6 +97,22 @@ export class Drawing {
 
   resetDraw() {
     this.sketch.background('#242424');
+
+    // create background image rather than drawing
+    // const chunkNum = 25;
+    // const chunkWidth = this.width / chunkNum;
+    // const chunkHeight = this.height / chunkNum;
+
+    // let x = 0;
+    // let y = 0;
+    // for (let i = 0; i < chunkNum * chunkNum; i++) {
+    //   this.sketch.point(x, y);
+    //   x += chunkWidth;
+    //   if (x >= this.width) {
+    //     x = 0;
+    //     y += chunkHeight;
+    //   }
+    // }
     // ? NEED THIS TO RESET SET HOVERED ITEM. CONSIDER REFACTORING?
     this.sketch.cursor(this.sketch.ARROW);
     const setHovering = useStore.getState().setHovering;
@@ -174,7 +191,7 @@ export class Drawing {
     setSelectedComponent('');
   }
 
-  createComponent(props: createComponentProps): Battery | Light {
+  createComponent(props: createComponentProps): Component {
     const defaultProps = {
       sketch: this.sketch,
       type: props.type,
@@ -182,8 +199,9 @@ export class Drawing {
     };
     if (props.type === types.BATTERY) {
       return new Battery(defaultProps);
+    } else if (props.type === types.RESISTOR) {
+      return new Resistor(defaultProps);
     } else {
-      // NOTE: ASSUMED LIGHT
       return new Light(defaultProps);
     }
   }
@@ -203,7 +221,6 @@ export class Drawing {
     return link;
   }
 
-  // todo: only some components could be dragged?
   dragComponent(id: string) {
     const nextPos = this.vector(this.sketch.mouseX, this.sketch.mouseY);
     const component = this.components[id];
@@ -262,18 +279,15 @@ export class Drawing {
     this.selectNode('');
   }
 
-  // todo: rather than linking circuit nodes, why not link
-  // todo: components together and thats the circuit?
   linkCircuitNodes(node1: CircuitNode, node2: CircuitNode) {
     if (
       node1.hasLink(node2) ||
       node2.hasLink(node1) ||
       node1.parentNode.id === node2.parentNode.id
     ) {
+      // todo: show error message to user?
       return;
     }
-    // node1.link(node2);
-    // node2.link(node1);
     const link = this.createLink({
       node1: node1,
       node2: node2,

@@ -4,35 +4,32 @@ import { NodeProps } from '../Node/Node';
 import { Component } from '../Component/Component';
 import { CircuitNode } from '../CircuitNode/CircuitNode';
 
-import battery from '@/assets/battery.svg';
+import resistorIcon from '@/assets/resistor.svg';
 
 import { useStore } from '@/utils/store';
 import { modes } from '@/utils/modes';
 import { types } from '@/utils/types';
 
-interface BatteryProps extends NodeProps {
+interface ResistorProps extends NodeProps {
   sketch: Q5;
 }
 
-interface BatteryData {
-  voltage: number;
-  currentType: 'DC' | 'AC';
+interface ResistorData {
+  resistance: number;
 }
 
-export class Battery extends Component {
-  data: BatteryData;
-
-  constructor(data: BatteryProps) {
+export class Resistor extends Component {
+  data: ResistorData;
+  constructor(data: ResistorProps) {
     super(data);
     this.subnodes = {};
     this.width = 30;
     this.height = 75;
-    this.img = this.sketch.loadImage(battery);
+    this.img = this.sketch.loadImage(resistorIcon);
     // TODO: should we include more stuff
     // TODO: like units?
     this.data = {
-      voltage: 10,
-      currentType: 'DC',
+      resistance: 100,
     };
     // TODO: Change the relative position on the component
     // TODO: so we don't have to rely on using const anode and cathode key names
@@ -60,10 +57,10 @@ export class Battery extends Component {
     this.sketch.rect(this.pos.x, this.pos.y, this.width, this.height);
     this.sketch.image(
       this.img,
-      this.pos.x - 25,
-      this.pos.y - 25
-      // this.width + 25,
-      // this.height - 5
+      this.pos.x - 18,
+      this.pos.y - 20,
+      this.width + 5,
+      this.height - 35
     );
     this.sketch.pop();
     const mode = useStore.getState().mode;

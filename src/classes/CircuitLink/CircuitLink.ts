@@ -15,12 +15,16 @@ export class CircuitLink extends Node {
   node1: CircuitNode;
   node2: CircuitNode;
   diameter: number;
+  voltage: number;
+  current: number;
 
   constructor(props: CircuitLinkProps) {
     super(props);
     this.node1 = props.node1;
     this.node2 = props.node2;
     this.diameter = 10;
+    this.voltage = 0;
+    this.current = 0;
   }
 
   get midpoint() {

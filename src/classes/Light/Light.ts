@@ -10,16 +10,24 @@ import { useStore } from '@/utils/store';
 import { modes } from '@/utils/modes';
 import { types } from '@/utils/types';
 
+interface LightData {
+  current: number;
+}
+
 export class Light extends Component {
   height: number;
   width: number;
   borderRadius: number;
+  data: LightData;
 
   constructor(data: NodeProps) {
     super(data);
     this.width = 30;
     this.height = 75;
     this.borderRadius = 10;
+    this.data = {
+      current: 1,
+    };
     this.img = this.sketch.loadImage(light);
     const anodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
     const cathodePos = this.vector(this.pos.x, this.pos.y + this.height / 2);

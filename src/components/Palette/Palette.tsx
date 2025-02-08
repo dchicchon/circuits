@@ -4,6 +4,7 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import PolylineIcon from '@mui/icons-material/Polyline';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import BackHandIcon from '@mui/icons-material/BackHand';
 
 import { useStore } from '../../utils/store';
@@ -49,6 +50,17 @@ function Palette() {
               <PolylineIcon
                 color={mode === modes.CONNECT_CIRCUIT_NODE ? 'primary' : 'inherit'}
               />
+            </IconButton>
+          </Tooltip>
+          {/* use multimeter across links */}
+          <Tooltip title="Multimeter">
+            <IconButton
+              onClick={() => {
+                setMode(modes.MULTMETER);
+              }}
+              aria-label={modes.MULTMETER}
+            >
+              <QueryStatsIcon color={mode === modes.MULTMETER ? 'primary' : 'inherit'} />
             </IconButton>
           </Tooltip>
         </Stack>

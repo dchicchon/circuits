@@ -3,6 +3,8 @@ import { useStore } from '@/utils/store';
 
 import { Drawing } from '@/classes/Drawing/Drawing';
 
+// import styles from './Canvas.module.css';
+
 function CanvasComp() {
   const setDrawing = useStore((state) => state.setDrawing);
   useEffect(() => {
@@ -22,7 +24,7 @@ function CanvasComp() {
     };
   }, []);
 
-  return <div id="sketch"></div>;
+  return <div id="main_sketch"></div>;
 }
 
 export default CanvasComp;

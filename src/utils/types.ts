@@ -3,4 +3,5 @@ export const types = {
   CIRCUIT_LINK: 'CIRCUIT_LINK',
   BATTERY: 'BATTERY',
   LIGHT: 'LIGHT',
+  RESISTOR: 'RESISTOR',
 };

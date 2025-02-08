@@ -14,12 +14,7 @@ interface ResistorProps extends NodeProps {
   sketch: Q5;
 }
 
-interface ResistorData {
-  resistance: number;
-}
-
 export class Resistor extends Component {
-  data: ResistorData;
   constructor(data: ResistorProps) {
     super(data);
     this.subnodes = {};
@@ -29,7 +24,12 @@ export class Resistor extends Component {
     // TODO: should we include more stuff
     // TODO: like units?
     this.data = {
-      resistance: 100,
+      resistance: {
+        value: 100,
+        type: 'number',
+        name: 'Resistance',
+        units: 'ohms',
+      },
     };
     // TODO: Change the relative position on the component
     // TODO: so we don't have to rely on using const anode and cathode key names

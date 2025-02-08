@@ -125,12 +125,22 @@ export class Drawing {
     const setSelectedComponent = useStore.getState().setSelectedComponent;
 
     if (mode === modes.ADD_COMPONENT) {
-      // 8 and 27
       const deletionCodes = [8, 27];
       const keyCode = this.sketch.keyCode;
       if (deletionCodes.includes(keyCode)) {
         setSelectedComponent('');
         setMode(modes.SELECT);
+      }
+    } else if (mode === modes.SELECT) {
+      const selected = useStore.getState().selected;
+      const deletionCodes = [8, 27];
+      const keyCode = this.sketch.keyCode;
+      if (deletionCodes.includes(keyCode)) {
+        if (selected instanceof Component) {
+          this.deleteComponent(selected);
+        } else if (selected instanceof CircuitLink) {
+          this.deleteLink(selected);
+        }
       }
     }
   }
@@ -179,6 +189,7 @@ export class Drawing {
       // this.addNode(component);
       if (component.subnodes) {
         Object.keys(component.subnodes).forEach((key) => {
+          // here we're adding a subnode
           const subnode = component.subnodes[key];
           this.components[subnode.id] = subnode;
           // this.addNode(subnode);

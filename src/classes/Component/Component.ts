@@ -12,6 +12,18 @@ interface SubNodes {
   [id: string]: CircuitNode;
 }
 
+interface DataObject {
+  value: number | string;
+  type: 'enum-type' | 'number';
+  name: string;
+  units?: 'volts' | 'amps' | 'ohms';
+  select?: Array<string>;
+}
+
+interface ComponentData {
+  [id: string]: DataObject;
+}
+
 interface ComponentProps extends NodeProps {}
 
 // An electrical component should have subnodes
@@ -21,7 +33,7 @@ export class Component extends Node {
   borderRadius: number;
   subnodes: SubNodes;
   img: object;
-  data: object;
+  data: ComponentData;
 
   constructor(data: ComponentProps) {
     super(data);

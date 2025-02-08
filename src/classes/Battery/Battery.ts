@@ -14,13 +14,11 @@ interface BatteryProps extends NodeProps {
   sketch: Q5;
 }
 
-interface BatteryData {
-  voltage: number;
-  currentType: 'DC' | 'AC';
-}
 
+
+
+// how you can modify the data
 export class Battery extends Component {
-  data: BatteryData;
 
   constructor(data: BatteryProps) {
     super(data);
@@ -28,12 +26,22 @@ export class Battery extends Component {
     this.width = 30;
     this.height = 75;
     this.img = this.sketch.loadImage(battery);
-    // TODO: should we include more stuff
-    // TODO: like units?
+
     this.data = {
-      voltage: 10,
-      currentType: 'DC',
+      voltage: {
+        name: 'Voltage',
+        value: 10,
+        type: 'number',
+        units: 'volts',
+      },
+      currentType: {
+        name: 'Current Type',
+        value: 'AC',
+        type: 'enum-type',
+        select: ['AC', 'DC'],
+      },
     };
+
     // TODO: Change the relative position on the component
     // TODO: so we don't have to rely on using const anode and cathode key names
     const anodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);

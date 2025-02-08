@@ -9,13 +9,12 @@ import InspectPanel from '../InspectPanel';
 function SideMenu() {
   // todo: set this in store instead? to utilize on select
   const [menu, setMenu] = useState('components-list');
-
-  // const mode = useStore((state) => state.mode);
-  // const selected = useStore((state) => state.selected);
   return (
     <Paper
       elevation={5}
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
         userSelect: 'none',
         zIndex: 5,
         position: 'absolute',
@@ -54,10 +53,8 @@ function SideMenu() {
           <Typography variant="body1">Inspect</Typography>
         </Paper>
       </Box>
-      <Box>
-        {menu === 'components-list' && <ComponentsList />}
-        {menu === 'inspect-component' && <InspectPanel />}
-      </Box>
+      {menu === 'components-list' && <ComponentsList />}
+      {menu === 'inspect-component' && <InspectPanel />}
     </Paper>
   );
 }

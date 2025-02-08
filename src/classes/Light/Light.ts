@@ -10,15 +10,10 @@ import { useStore } from '@/utils/store';
 import { modes } from '@/utils/modes';
 import { types } from '@/utils/types';
 
-interface LightData {
-  current: number;
-}
-
 export class Light extends Component {
   height: number;
   width: number;
   borderRadius: number;
-  data: LightData;
 
   constructor(data: NodeProps) {
     super(data);
@@ -26,7 +21,21 @@ export class Light extends Component {
     this.height = 75;
     this.borderRadius = 10;
     this.data = {
-      current: 1,
+      current: {
+        value: 0,
+        name: 'Current',
+        type: 'number',
+      },
+      currentRating: {
+        value: 0.02,
+        name: 'Current Rating',
+        type: 'number',
+      },
+      forwardVoltage: {
+        value: 1.5,
+        name: 'Forward Voltage',
+        type: 'number',
+      },
     };
     this.img = this.sketch.loadImage(light);
     const anodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
@@ -50,6 +59,7 @@ export class Light extends Component {
   draw() {
     this.sketch.push();
     this.sketch.noFill();
+    // maybe we should just draw subnodes here instead?
     // anode should be located at top of battery and bottom?
     this.sketch.rect(this.pos.x, this.pos.y, this.width, this.height);
     this.sketch.image(this.img, this.pos.x - 25, this.pos.y - 25);

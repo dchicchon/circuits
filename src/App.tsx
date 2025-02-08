@@ -1,5 +1,4 @@
 // import { useState } from 'react';
-import Container from '@mui/material/Container';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Palette from './components/Palette';
@@ -10,7 +9,6 @@ import Debug from './components/SideMenu';
 
 const darkTheme = createTheme({
   palette: {
-    background: '#fffff',
     mode: 'dark',
   },
 });

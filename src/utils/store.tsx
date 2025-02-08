@@ -4,6 +4,7 @@ import { CircuitLink, Links } from '@/classes/CircuitLink/CircuitLink';
 import { Node } from '@/classes/Node/Node';
 import { Drawing } from '@/classes/Drawing/Drawing';
 import { Component, Components } from '@/classes/Component/Component';
+import { AlertColor } from '@mui/material';
 
 interface State {
   drawing: Drawing | null;
@@ -28,7 +29,7 @@ interface State {
   openBar: boolean;
   setOpenBar: (value: boolean) => void;
   message: string;
-  severity: string;
+  severity: AlertColor;
   errorMessage: (value: string) => void;
   successMessage: (value: string) => void;
   closeMessage: () => void;
@@ -46,7 +47,7 @@ export const useStore = create<State>((set, get) => ({
   links: {},
   setLinks: () => set(() => ({})),
   selected: null,
-  setSelected: (node: Node) =>
+  setSelected: (node: Node | null) =>
     set(() => ({
       selected: node,
     })),
@@ -66,7 +67,7 @@ export const useStore = create<State>((set, get) => ({
     set(() => {
       return {
         mode: value,
-        selected: '',
+        selected: null,
       };
     }),
 
@@ -74,7 +75,7 @@ export const useStore = create<State>((set, get) => ({
   openBar: false,
   setOpenBar: (bool: boolean) => set(() => ({ openBar: bool })),
   message: '',
-  severity: '',
+  severity: 'success',
   errorMessage: (newMessage: string) =>
     set(() => ({
       openBar: true,

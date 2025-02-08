@@ -3,17 +3,18 @@ import Typography from '@mui/material/Typography';
 // import TextField from '@mui/material/TextField';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { NumberField } from '@base-ui-components/react/number-field';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Stack from '@mui/material/Stack';
+
+import { NumberField } from '@base-ui-components/react/number-field';
 
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { Component } from '@/classes/Component/Component';
+import { Component, DataObject } from '@/classes/Component/Component';
 import { CircuitLink } from '@/classes/CircuitLink/CircuitLink';
 
 import { modes } from '@/utils/modes';
@@ -64,10 +65,18 @@ interface InspectComponentProps {
   component: Component;
 }
 
-function EditNumber(props) {
-  const [val, setVal] = useState(props.dataObject.value);
+interface EditNumberProps {
+  dataObject: DataObject;
+}
 
-  const updateNumber = (event) => {
+function EditNumber(props: EditNumberProps) {
+  const [val, setVal] = useState(props.dataObject.value as number);
+
+  const updateNumber = (event: {
+    target: {
+      value: number;
+    };
+  }) => {
     setVal(event.target.value);
   };
 
@@ -109,8 +118,12 @@ function EditNumber(props) {
   );
 }
 
-function EditEnum(props) {
-  const [selectedVal, setSeletedVal] = useState(props.dataObject.value);
+interface EditEnumProps {
+  dataObject: DataObject;
+}
+
+function EditEnum(props: EditEnumProps) {
+  const [selectedVal, setSeletedVal] = useState(props.dataObject.value as string);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSeletedVal(event.target.value as string);
@@ -120,7 +133,7 @@ function EditEnum(props) {
     <Box>
       <Typography variant="body2">{props.dataObject.name}</Typography>
       <Select value={selectedVal} onChange={handleChange}>
-        {props.dataObject.select.map((enumVal: string, i: number) => (
+        {props.dataObject.select?.map((enumVal: string, i: number) => (
           <MenuItem key={i} value={enumVal}>
             {enumVal}
           </MenuItem>

@@ -12,7 +12,7 @@ interface SubNodes {
   [id: string]: CircuitNode;
 }
 
-interface DataObject {
+export interface DataObject {
   value: number | string;
   type: 'enum-type' | 'number';
   name: string;

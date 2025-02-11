@@ -115,15 +115,15 @@ export class Drawing {
     const chunkNum = 25;
     const chunkWidth = this.width / chunkNum;
     // const chunkHeight = this.height / chunkNum;
-    let x = 0;
-    let y = 0;
+    let x = 20;
+    let y = 20;
     for (let i = 0; i < chunkNum * chunkNum; i++) {
       this.sketch.stroke('grey');
       this.sketch.strokeWeight(3);
       this.sketch.point(x, y);
       x += chunkWidth;
       if (x >= this.width) {
-        x = 0;
+        x = 20;
         y += chunkWidth;
       }
     }

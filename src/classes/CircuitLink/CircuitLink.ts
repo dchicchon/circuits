@@ -58,7 +58,6 @@ export class CircuitLink extends Node {
     const selected = useStore.getState().selected;
     if (this.id === selected) {
       this.sketch.push();
-      // this.sketch.strokeWeight(3);
       this.sketch.stroke('orange');
       this.sketch.fill('orange');
       this.sketch.circle(this.midpoint.x, this.midpoint.y, this.diameter);

@@ -4,7 +4,6 @@ import { CircuitLink } from '../CircuitLink/CircuitLink';
 import { useStore } from '@/utils/store';
 import { Component } from '../Components/Component';
 
-// should circuit nodes have a type as well? like anode,cathode?
 export interface CircuitNodes {
   [id: string]: CircuitNode;
 }
@@ -20,14 +19,10 @@ interface Links {
 
 export class CircuitNode extends Node {
   // CATHODE - negative
-  // ANODE - positive?
+  // ANODE - positive
   electrodeType: 'anode' | 'cathode';
   diameter: number;
   parentNode: Component;
-
-  // ? Does this need to contain a direct reference to other objects or just need ids?
-  // linked: Array<string>;
-  // linked: Array<CircuitNode>;
   links: Links;
   constructor(props: CircuitNodeProps) {
     super(props);
@@ -38,8 +33,6 @@ export class CircuitNode extends Node {
   }
 
   draw() {
-    // we should be drawing relative to our parent always
-
     this.sketch.push();
     this.sketch.strokeWeight(3);
     this.sketch.stroke('black');

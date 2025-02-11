@@ -22,7 +22,6 @@ interface State {
   mode: string;
   setMode: (value: string) => void;
 
-
   // calculate circuit value
   calculateCircuit: () => void;
 

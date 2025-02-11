@@ -37,7 +37,6 @@ export class CircuitLink extends Node {
 
   draw() {
     this.sketch.push();
-
     const node1Pos = this.node1.getPos();
     const node2Pos = this.node2.getPos();
     this.sketch.line(node1Pos.x, node1Pos.y, node2Pos.x, node2Pos.y);

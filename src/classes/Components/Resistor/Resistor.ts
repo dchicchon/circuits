@@ -1,14 +1,11 @@
-// import Q5 from '@/utils/qx5js';
-
-import { NodeProps } from '../Node/Node';
-import { Component } from '../Component/Component';
-import { CircuitNode } from '../CircuitNode/CircuitNode';
 
 import resistorIcon from '@/assets/resistor.svg';
 
+import { NodeProps } from '@/classes/Node/Node';
+import { Component } from '@/classes/Components/Component';
+
 import { useStore } from '@/utils/store';
 import { modes } from '@/utils/modes';
-import { types } from '@/utils/componentTypes';
 
 type ResistorProps = NodeProps;
 
@@ -29,29 +26,15 @@ export class Resistor extends Component {
         units: 'ohms',
       },
     };
-    // TODO: Change the relative position on the component
-    // TODO: so we don't have to rely on using const anode and cathode key names
-    const cathodePos = this.vector(0, this.height / -2);
-    const anodePos = this.vector(0, this.height / 2);
 
-    const anode = new CircuitNode({
-      electrodeType: 'anode',
-      type: types.CIRCUIT_NODE,
-      pos: anodePos,
-      sketch: this.sketch,
-      parentNode: this,
+    this.addNode({
+      type: 'anode',
+      pos: this.vector(0, this.height / 2),
     });
-
-    const cathode = new CircuitNode({
-      electrodeType: 'cathode',
-      type: types.CIRCUIT_NODE,
-      pos: cathodePos,
-      sketch: this.sketch,
-      parentNode: this,
+    this.addNode({
+      type: 'cathode',
+      pos: this.vector(0, this.height / -2),
     });
-
-    this.nodes.anode = anode;
-    this.nodes.cathode = cathode;
   }
 
   drawSelf() {

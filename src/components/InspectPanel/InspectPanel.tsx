@@ -14,7 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { Component, DataObject } from '@/classes/Component/Component';
+import { Component, DataObject } from '@/classes/Components/Component';
 import { CircuitLink } from '@/classes/CircuitLink/CircuitLink';
 
 import { modes } from '@/utils/modes';

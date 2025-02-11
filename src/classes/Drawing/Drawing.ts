@@ -1,16 +1,17 @@
 import Q5 from '@/utils/qx5js';
-// import Q5 from 'q5xjs';
 
-import { useStore } from '@/utils/store';
-import { Battery } from '../Battery/Battery';
-import { Light } from '../Light/Light';
+
+import { Battery } from '../Components/Battery/Battery';
+import { Light } from '../Components/Light/Light';
+import { Resistor } from '../Components/Resistor/Resistor';
+
 import { CircuitNode, CircuitNodes } from '../CircuitNode/CircuitNode';
 import { CircuitLink, Links } from '../CircuitLink/CircuitLink';
-import { Component, Components } from '../Component/Component';
+import { Component, Components } from '../Components/Component';
 
+import { useStore } from '@/utils/store';
 import { modes } from '@/utils/modes';
 import { types } from '@/utils/componentTypes';
-import { Resistor } from '../Resistor/Resistor';
 
 interface createLinkProps {
   node1: CircuitNode;
@@ -81,6 +82,9 @@ export class Drawing {
     this.resetDraw();
     this.drawLinks();
     this.drawComponents();
+
+    const mode = useStore.getState().mode;
+    if (mode !== modes.CONNECT_CIRCUIT_NODE) return;
     this.drawCircuitNodes();
   }
 

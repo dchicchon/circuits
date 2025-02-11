@@ -1,16 +1,15 @@
+import Q5 from '@/utils/qx5js';
 import { Node, NodeProps } from '../Node/Node';
 import { CircuitLink } from '../CircuitLink/CircuitLink';
-
-import { modes } from '@/utils/modes';
 import { useStore } from '@/utils/store';
-import { Component } from '../Component/Component';
+import { Component } from '../Components/Component';
 
 // should circuit nodes have a type as well? like anode,cathode?
 export interface CircuitNodes {
   [id: string]: CircuitNode;
 }
 
-interface CircuitNodeProps extends NodeProps {
+export interface CircuitNodeProps extends NodeProps {
   parentNode: Component;
   electrodeType: 'anode' | 'cathode';
 }
@@ -40,8 +39,7 @@ export class CircuitNode extends Node {
 
   draw() {
     // we should be drawing relative to our parent always
-    const mode = useStore.getState().mode;
-    if (mode !== modes.CONNECT_CIRCUIT_NODE) return;
+
     this.sketch.push();
     this.sketch.strokeWeight(3);
     this.sketch.stroke('black');
@@ -67,7 +65,7 @@ export class CircuitNode extends Node {
     }
   }
 
-  getPos() {
+  getPos() : Q5.Vector {
     const parentPos = this.vector(this.parentNode.pos.x, this.parentNode.pos.y);
     return parentPos.add(this.pos);
   }
@@ -115,12 +113,4 @@ export class CircuitNode extends Node {
   link(link: CircuitLink) {
     this.links[link.id] = link;
   }
-
-  // update compare to your initial
-  // updatePos() {
-  //   this.pos = this.vector(
-  //     this.parentNode.pos.x,
-  //     this.parentNode.pos.y - this.parentNode.height / 2
-  //   );
-  // }
 }

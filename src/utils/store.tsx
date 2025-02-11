@@ -3,7 +3,7 @@ import { modes } from './modes';
 import { CircuitLink, Links } from '@/classes/CircuitLink/CircuitLink';
 import { Node } from '@/classes/Node/Node';
 import { Drawing } from '@/classes/Drawing/Drawing';
-import { Components } from '@/classes/Component/Component';
+import { Components } from '@/classes/Components/Component';
 import { AlertColor } from '@mui/material';
 import { CircuitNode, CircuitNodes } from '@/classes/CircuitNode/CircuitNode';
 

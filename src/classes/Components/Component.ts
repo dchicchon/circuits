@@ -3,6 +3,7 @@ import Q5 from '@/utils/qx5js';
 import { Node, NodeProps } from '../Node/Node';
 import { CircuitNode } from '../CircuitNode/CircuitNode';
 import { useStore } from '@/utils/store';
+import { types } from '@/utils/componentTypes';
 
 export interface Components {
   [id: string]: Component;
@@ -49,21 +50,14 @@ export abstract class Component extends Node {
     this.borderRadius = 10;
   }
 
-  // todo: consider adding default draw function to all components?
-  // todo: Make class method
-
   draw() {
     this.drawSelf();
   }
 
   setPos(pos: Q5.Vector) {
     this.pos = pos;
-    // Object.keys(this.nodes).forEach((key) => {
-    // this.nodes[key].updatePos();
-    // });
   }
 
-  // todo: Make class method
   drag(pos: Q5.Vector) {
     this.setPos(pos);
   }
@@ -100,5 +94,17 @@ export abstract class Component extends Node {
       );
       this.sketch.pop();
     }
+  }
+
+  addNode(data: { type: 'anode' | 'cathode'; pos: Q5.Vector }) {
+    const node = new CircuitNode({
+      electrodeType: data.type,
+      type: types.CIRCUIT_NODE,
+      pos: data.pos,
+      sketch: this.sketch,
+      parentNode: this,
+    });
+
+    this.nodes[node.id] = node;
   }
 }

@@ -1,6 +1,5 @@
 import Q5 from '@/utils/qx5js';
 
-
 import { Battery } from '../Components/Battery/Battery';
 import { Light } from '../Components/Light/Light';
 import { Resistor } from '../Components/Resistor/Resistor';
@@ -22,6 +21,8 @@ interface createComponentProps {
   type: string;
 }
 
+// we should rerun our circuit calculations any time an action is done
+// in our circuit board. Maybe we could add something to our store or in our drawing?
 export class Drawing {
   components: Components;
   nodes: CircuitNodes;
@@ -111,22 +112,21 @@ export class Drawing {
 
   resetDraw() {
     this.sketch.background('#242424');
-
-    // create background image rather than drawing
-    // const chunkNum = 25;
-    // const chunkWidth = this.width / chunkNum;
+    const chunkNum = 25;
+    const chunkWidth = this.width / chunkNum;
     // const chunkHeight = this.height / chunkNum;
-
-    // let x = 0;
-    // let y = 0;
-    // for (let i = 0; i < chunkNum * chunkNum; i++) {
-    //   this.sketch.point(x, y);
-    //   x += chunkWidth;
-    //   if (x >= this.width) {
-    //     x = 0;
-    //     y += chunkHeight;
-    //   }
-    // }
+    let x = 0;
+    let y = 0;
+    for (let i = 0; i < chunkNum * chunkNum; i++) {
+      this.sketch.stroke('grey');
+      this.sketch.strokeWeight(3);
+      this.sketch.point(x, y);
+      x += chunkWidth;
+      if (x >= this.width) {
+        x = 0;
+        y += chunkWidth;
+      }
+    }
     // ? NEED THIS TO RESET SET HOVERED ITEM. CONSIDER REFACTORING?
     this.sketch.cursor(this.sketch.ARROW);
     const setHovering = useStore.getState().setHovering;
@@ -175,7 +175,7 @@ export class Drawing {
       }
     } else if (mode === modes.CONNECT_CIRCUIT_NODE) {
       if (selected && hovering) {
-        this.linkCircuitNodes(this.nodes[hovering], this.nodes[selected]);
+        this.addLink(this.nodes[hovering], this.nodes[selected]);
         this.selectNode('');
       } else if (hovering !== selected) {
         this.selectNode(hovering);
@@ -196,24 +196,28 @@ export class Drawing {
     }
   }
 
-  addComponent() {
-    const setMode = useStore.getState().setMode;
-    const setSelectedComponent = useStore.getState().setSelectedComponent;
-    const selectedComponent = useStore.getState().selectedComponent;
-
-    const component = this.createComponent({ type: selectedComponent });
+  dragComponent(id: string) {
+    const nextPos = this.vector(this.sketch.mouseX, this.sketch.mouseY);
+    const component = this.components[id];
     if (component) {
-      this.components[component.id] = component;
-      Object.keys(component.nodes).forEach((key) => {
-        const subnode = component.nodes[key];
-        this.nodes[subnode.id] = subnode;
-      });
+      component.drag(nextPos);
     }
-
-    setMode(modes.SELECT);
-    setSelectedComponent('');
   }
 
+  selectNode(id: string) {
+    const setSelected = useStore.getState().setSelected;
+    setSelected(id);
+  }
+
+  vector(x: number, y: number): Q5.Vector {
+    return this.sketch.createVector(x, y);
+  }
+
+  mousePos() {
+    return this.vector(this.sketch.mouseX, this.sketch.mouseY);
+  }
+
+  // CREATING
   createComponent(props: createComponentProps): Component {
     const defaultProps = {
       sketch: this.sketch,
@@ -244,57 +248,26 @@ export class Drawing {
     return link;
   }
 
-  dragComponent(id: string) {
-    const nextPos = this.vector(this.sketch.mouseX, this.sketch.mouseY);
-    const component = this.components[id];
-    if (component) {
-      component.drag(nextPos);
-    }
-  }
+  // ADDING
+  addComponent() {
+    const setMode = useStore.getState().setMode;
+    const setSelectedComponent = useStore.getState().setSelectedComponent;
+    const selectedComponent = useStore.getState().selectedComponent;
+    const calculateCircuit = useStore.getState().calculateCircuit;
 
-  selectNode(id: string) {
-    const setSelected = useStore.getState().setSelected;
-    setSelected(id);
-  }
-
-  vector(x: number, y: number): Q5.Vector {
-    return this.sketch.createVector(x, y);
-  }
-
-  mousePos() {
-    return this.vector(this.sketch.mouseX, this.sketch.mouseY);
-  }
-
-  addLink(link: CircuitLink) {
-    // todo: use setLinks from store here?
-    this.links[link.id] = link;
-  }
-
-  deleteLink(link: CircuitLink) {
-    link.removeNodes();
-    delete this.links[link.id];
-  }
-
-  deleteCircuitNode(circuitNode: CircuitNode) {
-    Object.keys(circuitNode.links).forEach((key) => {
-      const link = circuitNode.links[key];
-      this.deleteLink(link);
+    const component = this.createComponent({ type: selectedComponent });
+    this.components[component.id] = component;
+    Object.keys(component.nodes).forEach((key) => {
+      const subnode = component.nodes[key];
+      this.nodes[subnode.id] = subnode;
     });
-    delete this.nodes[circuitNode.id];
+
+    setMode(modes.SELECT);
+    setSelectedComponent('');
+    calculateCircuit();
   }
 
-  deleteComponent(component: Component) {
-    if (component.nodes) {
-      Object.keys(component.nodes).forEach((sub) => {
-        this.deleteCircuitNode(component.nodes[sub]);
-      });
-    }
-
-    delete this.components[component.id];
-    this.selectNode('');
-  }
-
-  linkCircuitNodes(node1: CircuitNode, node2: CircuitNode) {
+  addLink(node1: CircuitNode, node2: CircuitNode) {
     if (
       node1.hasLink(node2) ||
       node2.hasLink(node1) ||
@@ -310,6 +283,34 @@ export class Drawing {
     node1.link(link);
     node2.link(link);
 
-    this.addLink(link);
+    this.links[link.id] = link;
+    const calculateCircuit = useStore.getState().calculateCircuit;
+    calculateCircuit();
+  }
+
+  // DELETING
+  deleteLink(link: CircuitLink) {
+    const calculateCircuit = useStore.getState().calculateCircuit;
+    link.removeNodes();
+    delete this.links[link.id];
+    calculateCircuit();
+  }
+
+  deleteCircuitNode(circuitNode: CircuitNode) {
+    Object.keys(circuitNode.links).forEach((key) => {
+      const link = circuitNode.links[key];
+      this.deleteLink(link);
+    });
+    delete this.nodes[circuitNode.id];
+  }
+
+  deleteComponent(component: Component) {
+    const calculateCircuit = useStore.getState().calculateCircuit;
+    Object.keys(component.nodes).forEach((sub) => {
+      this.deleteCircuitNode(component.nodes[sub]);
+    });
+    delete this.components[component.id];
+    this.selectNode('');
+    calculateCircuit();
   }
 }

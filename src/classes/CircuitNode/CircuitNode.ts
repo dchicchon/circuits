@@ -31,7 +31,7 @@ export class CircuitNode extends Node {
   links: Links;
   constructor(props: CircuitNodeProps) {
     super(props);
-    this.diameter = 15;
+    this.diameter = 20;
     this.links = {};
     this.electrodeType = props.electrodeType;
     this.parentNode = props.parentNode;
@@ -65,7 +65,7 @@ export class CircuitNode extends Node {
     }
   }
 
-  getPos() : Q5.Vector {
+  getPos(): Q5.Vector {
     const parentPos = this.vector(this.parentNode.pos.x, this.parentNode.pos.y);
     return parentPos.add(this.pos);
   }

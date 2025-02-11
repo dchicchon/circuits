@@ -22,6 +22,10 @@ interface State {
   mode: string;
   setMode: (value: string) => void;
 
+
+  // calculate circuit value
+  calculateCircuit: () => void;
+
   // COMPONENTS
   components: Components;
   setComponents: (id: string, node: Node) => void;
@@ -49,6 +53,13 @@ export const useStore = create<State>((set, get) => ({
   setSelectedComponent: (val: string) => set(() => ({ selectedComponent: val })),
   hovering: '',
   setHovering: (val: string) => set(() => ({ hovering: val })),
+
+  calculateCircuit() {
+    console.log('calculating circuit');
+    const components = get().components;
+    const links = get().links;
+    console.log({ components, links });
+  },
   drawing: null,
   setDrawing: (val: Drawing) => set(() => ({ drawing: val })),
   selected: '',

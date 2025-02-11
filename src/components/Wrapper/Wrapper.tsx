@@ -19,7 +19,7 @@ function Wrapper(props: WrapperProps) {
   const severity = useStore((state) => state.severity);
   const closeMessage = useStore((state) => state.closeMessage);
 
-  const handleClose = (_, reason?: SnackbarCloseReason) => {
+  const handleClose = (_: unknown, reason?: SnackbarCloseReason) => {
     if (reason == 'clickaway') {
       return;
     }

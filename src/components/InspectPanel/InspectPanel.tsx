@@ -95,6 +95,7 @@ function EditNumber(props: EditNumberProps) {
           </NumberField.Decrement>
           <NumberField.Input
             value={val}
+            //@ts-expect-error expecting specific type?
             onChange={updateNumber}
             className={styles.Input}
           />
@@ -190,11 +191,16 @@ function InspectComponent({ component }: InspectComponentProps) {
 function InspectPanel() {
   const selected = useStore((state) => state.selected);
   const mode = useStore((state) => state.mode);
+  const components = useStore((state) => state.components);
+  const links = useStore((state) => state.links);
 
-  if (selected instanceof Component) {
-    return <InspectComponent component={selected} />;
-  } else if (selected instanceof CircuitLink) {
-    return <InspectLink link={selected} />;
+  const component = components[selected];
+  const link = links[selected];
+
+  if (component) {
+    return <InspectComponent component={component} />;
+  } else if (link) {
+    return <InspectLink link={link} />;
   } else if (mode === modes.Multimeter) {
     return <InspectMultimeter />;
   }

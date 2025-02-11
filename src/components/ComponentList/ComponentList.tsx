@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Icon from '@mui/material/Icon';
 
-import { types } from '@/utils/types';
+import { types } from '@/utils/componentTypes';
 import { modes } from '@/utils/modes';
 
 import batteryIcon from '@/assets/battery.svg';

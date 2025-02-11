@@ -1,4 +1,4 @@
-import Q5 from 'q5xjs';
+// import Q5 from '@/utils/qx5js';
 
 import { NodeProps } from '../Node/Node';
 import { Component } from '../Component/Component';
@@ -8,16 +8,14 @@ import resistorIcon from '@/assets/resistor.svg';
 
 import { useStore } from '@/utils/store';
 import { modes } from '@/utils/modes';
-import { types } from '@/utils/types';
+import { types } from '@/utils/componentTypes';
 
-interface ResistorProps extends NodeProps {
-  sketch: Q5;
-}
+type ResistorProps = NodeProps;
 
 export class Resistor extends Component {
   constructor(data: ResistorProps) {
     super(data);
-    this.subnodes = {};
+    this.nodes = {};
     this.width = 30;
     this.height = 75;
     this.img = this.sketch.loadImage(resistorIcon);
@@ -33,8 +31,8 @@ export class Resistor extends Component {
     };
     // TODO: Change the relative position on the component
     // TODO: so we don't have to rely on using const anode and cathode key names
-    const cathodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
-    const anodePos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+    const cathodePos = this.vector(0, this.height / -2);
+    const anodePos = this.vector(0, this.height / 2);
 
     const anode = new CircuitNode({
       electrodeType: 'anode',
@@ -44,7 +42,6 @@ export class Resistor extends Component {
       parentNode: this,
     });
 
-    this.subnodes.anode = anode;
     const cathode = new CircuitNode({
       electrodeType: 'cathode',
       type: types.CIRCUIT_NODE,
@@ -52,10 +49,12 @@ export class Resistor extends Component {
       sketch: this.sketch,
       parentNode: this,
     });
-    this.subnodes.cathode = cathode;
+
+    this.nodes.anode = anode;
+    this.nodes.cathode = cathode;
   }
 
-  draw() {
+  drawSelf() {
     this.sketch.push();
     this.sketch.noFill();
     this.sketch.rect(this.pos.x, this.pos.y, this.width, this.height);
@@ -74,13 +73,13 @@ export class Resistor extends Component {
     this.drawSelection();
   }
 
-  setPos(pos: Q5.Vector) {
-    this.pos = pos;
-    this.subnodes.anode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
-    this.subnodes.cathode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
-  }
+  // setPos(pos: Q5.Vector) {
+  //   this.pos = pos;
+  //   this.nodes.anode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+  //   this.nodes.cathode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
+  // }
 
-  drag(pos: Q5.Vector) {
-    this.setPos(pos);
-  }
+  // drag(pos: Q5.Vector) {
+  //   this.setPos(pos);
+  // }
 }

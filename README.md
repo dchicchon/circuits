@@ -8,7 +8,7 @@ Creating an application to develop circuit schematics for circuit study
 
 - Typescript
 - Zustand
-- Vite.js
+- [Vite.js](https://q5xjs.netlify.app/)
 - React
 - Q5xjs
 

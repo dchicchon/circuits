@@ -1,14 +1,15 @@
-import Q5 from 'q5xjs';
+import Q5 from '@/utils/qx5js';
+// import Q5 from 'q5xjs';
 
 import { useStore } from '@/utils/store';
 import { Battery } from '../Battery/Battery';
 import { Light } from '../Light/Light';
-import { CircuitNode } from '../CircuitNode/CircuitNode';
+import { CircuitNode, CircuitNodes } from '../CircuitNode/CircuitNode';
 import { CircuitLink, Links } from '../CircuitLink/CircuitLink';
 import { Component, Components } from '../Component/Component';
 
 import { modes } from '@/utils/modes';
-import { types } from '@/utils/types';
+import { types } from '@/utils/componentTypes';
 import { Resistor } from '../Resistor/Resistor';
 
 interface createLinkProps {
@@ -22,6 +23,7 @@ interface createComponentProps {
 
 export class Drawing {
   components: Components;
+  nodes: CircuitNodes;
   links: Links;
   sketch: Q5;
   hovered: string;
@@ -32,9 +34,9 @@ export class Drawing {
   canvas: HTMLElement;
 
   constructor() {
-    // this.circuitNodes = useStore.getState().circuitNodes;
     this.components = useStore.getState().components;
     this.links = useStore.getState().links;
+    this.nodes = useStore.getState().nodes;
 
     this.sketch = new Q5();
     this.setupListeners();
@@ -79,12 +81,20 @@ export class Drawing {
     this.resetDraw();
     this.drawLinks();
     this.drawComponents();
+    this.drawCircuitNodes();
   }
 
   drawComponents() {
     Object.keys(this.components).forEach((id) => {
       const component = this.components[id];
       component.draw();
+    });
+  }
+
+  drawCircuitNodes() {
+    Object.keys(this.nodes).forEach((id) => {
+      const circuitNode = this.nodes[id];
+      circuitNode.draw();
     });
   }
 
@@ -151,17 +161,19 @@ export class Drawing {
     const mode = useStore.getState().mode;
     const hovering = useStore.getState().hovering;
     const selected = useStore.getState().selected;
+
+    // todo make selected property specific to selected type/mode
     if (mode === modes.SELECT) {
-      if (hovering !== selected?.id) {
+      if (hovering !== selected) {
         this.selectNode(hovering);
       } else {
         // this.selectNode('');
       }
     } else if (mode === modes.CONNECT_CIRCUIT_NODE) {
       if (selected && hovering) {
-        this.linkCircuitNodes(this.components[hovering], selected);
+        this.linkCircuitNodes(this.nodes[hovering], this.nodes[selected]);
         this.selectNode('');
-      } else if (hovering !== selected?.id) {
+      } else if (hovering !== selected) {
         this.selectNode(hovering);
       }
     } else if (mode === modes.ADD_COMPONENT) {
@@ -188,16 +200,10 @@ export class Drawing {
     const component = this.createComponent({ type: selectedComponent });
     if (component) {
       this.components[component.id] = component;
-      // this.addNode(component);
-      if (component.subnodes) {
-        Object.keys(component.subnodes).forEach((key) => {
-          // here we're adding a subnode
-          const subnode = component.subnodes[key];
-          this.components[subnode.id] = subnode;
-          // this.addNode(subnode);
-        });
-      }
-      // we should be adding it's subnodes too
+      Object.keys(component.nodes).forEach((key) => {
+        const subnode = component.nodes[key];
+        this.nodes[subnode.id] = subnode;
+      });
     }
 
     setMode(modes.SELECT);
@@ -244,15 +250,7 @@ export class Drawing {
 
   selectNode(id: string) {
     const setSelected = useStore.getState().setSelected;
-    const component = this.components[id];
-    const link = this.links[id];
-    if (component) {
-      setSelected(component);
-    } else if (link) {
-      setSelected(link);
-    } else {
-      setSelected(null);
-    }
+    setSelected(id);
   }
 
   vector(x: number, y: number): Q5.Vector {
@@ -278,13 +276,13 @@ export class Drawing {
       const link = circuitNode.links[key];
       this.deleteLink(link);
     });
-    delete this.components[circuitNode.id];
+    delete this.nodes[circuitNode.id];
   }
 
   deleteComponent(component: Component) {
-    if (component.subnodes) {
-      Object.keys(component.subnodes).forEach((sub) => {
-        this.deleteCircuitNode(component.subnodes[sub]);
+    if (component.nodes) {
+      Object.keys(component.nodes).forEach((sub) => {
+        this.deleteCircuitNode(component.nodes[sub]);
       });
     }
 

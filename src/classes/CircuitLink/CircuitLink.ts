@@ -28,19 +28,19 @@ export class CircuitLink extends Node {
   }
 
   get midpoint() {
-    const midx = (this.node1.pos.x + this.node2.pos.x) / 2;
-    const midy = (this.node1.pos.y + this.node2.pos.y) / 2;
+    const node1Pos = this.node1.getPos();
+    const node2Pos = this.node2.getPos();
+    const midx = (node1Pos.x + node2Pos.x) / 2;
+    const midy = (node1Pos.y + node2Pos.y) / 2;
     return this.vector(midx, midy);
   }
 
   draw() {
     this.sketch.push();
-    this.sketch.line(
-      this.node1.pos.x,
-      this.node1.pos.y,
-      this.node2.pos.x,
-      this.node2.pos.y
-    );
+
+    const node1Pos = this.node1.getPos();
+    const node2Pos = this.node2.getPos();
+    this.sketch.line(node1Pos.x, node1Pos.y, node2Pos.x, node2Pos.y);
     this.sketch.circle(this.midpoint.x, this.midpoint.y, this.diameter);
     this.detectHover();
     this.sketch.pop();
@@ -57,7 +57,7 @@ export class CircuitLink extends Node {
 
   drawSelection() {
     const selected = useStore.getState().selected;
-    if (this.id === selected?.id) {
+    if (this.id === selected) {
       this.sketch.push();
       // this.sketch.strokeWeight(3);
       this.sketch.stroke('orange');

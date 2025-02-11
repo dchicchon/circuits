@@ -3,6 +3,7 @@ import { CircuitLink } from '../CircuitLink/CircuitLink';
 
 import { modes } from '@/utils/modes';
 import { useStore } from '@/utils/store';
+import { Component } from '../Component/Component';
 
 // should circuit nodes have a type as well? like anode,cathode?
 export interface CircuitNodes {
@@ -10,7 +11,7 @@ export interface CircuitNodes {
 }
 
 interface CircuitNodeProps extends NodeProps {
-  parentNode: Node;
+  parentNode: Component;
   electrodeType: 'anode' | 'cathode';
 }
 
@@ -19,11 +20,11 @@ interface Links {
 }
 
 export class CircuitNode extends Node {
-  // CATHODE - positive
-  // ANODE - negative
+  // CATHODE - negative
+  // ANODE - positive?
   electrodeType: 'anode' | 'cathode';
   diameter: number;
-  parentNode: Node;
+  parentNode: Component;
 
   // ? Does this need to contain a direct reference to other objects or just need ids?
   // linked: Array<string>;
@@ -38,16 +39,20 @@ export class CircuitNode extends Node {
   }
 
   draw() {
+    // we should be drawing relative to our parent always
     const mode = useStore.getState().mode;
     if (mode !== modes.CONNECT_CIRCUIT_NODE) return;
     this.sketch.push();
     this.sketch.strokeWeight(3);
     this.sketch.stroke('black');
-    this.sketch.circle(this.pos.x, this.pos.y, this.diameter);
-    if (this.electrodeType === 'anode') {
-      this.sketch.text('--', this.pos.x - 4, this.pos.y + 3);
+
+    // ! important to copy otherwise we modify parent pos
+    const drawPos = this.getPos();
+    this.sketch.circle(drawPos.x, drawPos.y, this.diameter);
+    if (this.electrodeType === 'cathode') {
+      this.sketch.text('+', drawPos.x - 4, drawPos.y + 3);
     } else {
-      this.sketch.text('+', this.pos.x - 4, this.pos.y + 3);
+      this.sketch.text('--', drawPos.x - 4, drawPos.y + 3);
     }
     this.detectHover();
     this.sketch.pop();
@@ -62,20 +67,27 @@ export class CircuitNode extends Node {
     }
   }
 
+  getPos() {
+    const parentPos = this.vector(this.parentNode.pos.x, this.parentNode.pos.y);
+    return parentPos.add(this.pos);
+  }
+
   isHovering(): boolean {
     const mousePos = this.mousePos();
-    const dist = mousePos.dist(this.pos).toFixed(2);
+    const drawPos = this.getPos();
+    const dist = mousePos.dist(drawPos).toFixed(2);
     return dist < this.diameter / 2;
   }
 
   drawSelection() {
     const selected = useStore.getState().selected;
-    if (this.id === selected?.id) {
+    if (this.id === selected) {
+      const drawPos = this.getPos();
       this.sketch.push();
       this.sketch.strokeWeight(3);
       this.sketch.stroke('black');
       this.sketch.fill('orange');
-      this.sketch.circle(this.pos.x, this.pos.y, this.diameter);
+      this.sketch.circle(drawPos.x, drawPos.y, this.diameter);
       this.sketch.pop();
     }
   }
@@ -103,4 +115,12 @@ export class CircuitNode extends Node {
   link(link: CircuitLink) {
     this.links[link.id] = link;
   }
+
+  // update compare to your initial
+  // updatePos() {
+  //   this.pos = this.vector(
+  //     this.parentNode.pos.x,
+  //     this.parentNode.pos.y - this.parentNode.height / 2
+  //   );
+  // }
 }

@@ -1,4 +1,5 @@
-import Q5 from 'q5xjs';
+import Q5 from '@/utils/qx5js';
+
 import { nanoid } from 'nanoid';
 
 export interface NodeProps {
@@ -8,7 +9,10 @@ export interface NodeProps {
   type: string;
 }
 
-export class Node {
+
+// todo: set pos to private property to 
+// todo cont. avoid modification
+export abstract class Node {
   sketch: Q5;
   pos: Q5.Vector;
   id: string;

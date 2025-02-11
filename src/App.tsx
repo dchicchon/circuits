@@ -2,10 +2,10 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Palette from './components/Palette';
-import './App.css';
 import Wrapper from './components/Wrapper';
 import Canvas from './components/Canvas';
-import Debug from './components/SideMenu';
+import SideMenu from './components/SideMenu';
+import './App.css';
 
 const darkTheme = createTheme({
   palette: {
@@ -13,13 +13,6 @@ const darkTheme = createTheme({
   },
 });
 
-/**
- *
- *
- * Create a palette like excalidraw to do actions
- *
- *
- */
 function App() {
   return (
     <ThemeProvider theme={darkTheme}>
@@ -27,7 +20,7 @@ function App() {
       <Wrapper>
         <Palette />
         <Canvas />
-        <Debug />
+        <SideMenu />
       </Wrapper>
     </ThemeProvider>
   );

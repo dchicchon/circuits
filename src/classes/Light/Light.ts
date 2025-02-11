@@ -1,4 +1,4 @@
-import Q5 from 'q5xjs';
+// import Q5 from '@/utils/qx5js';
 
 import { NodeProps } from '../Node/Node';
 import { CircuitNode } from '../CircuitNode/CircuitNode';
@@ -8,7 +8,7 @@ import light from '@/assets/light.svg';
 
 import { useStore } from '@/utils/store';
 import { modes } from '@/utils/modes';
-import { types } from '@/utils/types';
+import { types } from '@/utils/componentTypes';
 
 export class Light extends Component {
   height: number;
@@ -33,8 +33,10 @@ export class Light extends Component {
       },
     };
     this.img = this.sketch.loadImage(light);
-    const cathodePos = this.vector(this.pos.x, this.pos.y - this.height / 2);
-    const anodePos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+
+    const cathodePos = this.vector(0, this.height / -2);
+    const anodePos = this.vector(0, this.height / 2);
+
     const anode = new CircuitNode({
       electrodeType: 'anode',
       type: types.CIRCUIT_NODE,
@@ -42,7 +44,7 @@ export class Light extends Component {
       sketch: this.sketch,
       parentNode: this,
     });
-    this.subnodes.anode = anode;
+    this.nodes.anode = anode;
     const cathode = new CircuitNode({
       electrodeType: 'cathode',
       type: types.CIRCUIT_NODE,
@@ -50,10 +52,10 @@ export class Light extends Component {
       sketch: this.sketch,
       parentNode: this,
     });
-    this.subnodes.cathode = cathode;
+    this.nodes.cathode = cathode;
   }
 
-  draw() {
+  drawSelf() {
     this.sketch.push();
     this.sketch.noFill();
     // maybe we should just draw subnodes here instead?
@@ -68,14 +70,14 @@ export class Light extends Component {
     this.drawSelection();
   }
 
-  setPos(pos: Q5.Vector) {
-    this.pos = pos;
-    this.subnodes.anode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
-    this.subnodes.cathode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
+  // setPos(pos: Q5.Vector) {
+  //   this.pos = pos;
+  //   this.nodes.anode.pos = this.vector(this.pos.x, this.pos.y + this.height / 2);
+  //   this.nodes.cathode.pos = this.vector(this.pos.x, this.pos.y - this.height / 2);
 
-  }
+  // }
 
-  drag(pos: Q5.Vector) {
-    this.setPos(pos);
-  }
+  // drag(pos: Q5.Vector) {
+  //   this.setPos(pos);
+  // }
 }

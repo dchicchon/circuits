@@ -6,9 +6,14 @@ import Paper from '@mui/material/Paper';
 import ComponentsList from '../ComponentList';
 import InspectPanel from '../InspectPanel';
 
+const menus = {
+  COMPONENTS_LIST: 'COMPONENTS_LIST',
+  INSPECT_COMPONENT: 'INSPECT_COMPONENT',
+};
+
 function SideMenu() {
   // todo: set this in store instead? to utilize on select
-  const [menu, setMenu] = useState('components-list');
+  const [menu, setMenu] = useState(menus.COMPONENTS_LIST);
   return (
     <Paper
       elevation={5}
@@ -26,35 +31,37 @@ function SideMenu() {
     >
       <Box display="flex">
         <Paper
-          elevation={menu === 'components-list' ? 0 : 5}
+          elevation={menu === menus.COMPONENTS_LIST ? 0 : 5}
           sx={{
             p: 1,
             flex: 1,
             cursor: 'pointer',
+            backgroundColor: 'transparent',
           }}
           onClick={() => {
-            setMenu('components-list');
+            setMenu(menus.COMPONENTS_LIST);
           }}
         >
           <Typography variant="body1">Components</Typography>
         </Paper>
 
         <Paper
-          elevation={menu === 'inspect-component' ? 0 : 5}
+          elevation={menu === menus.INSPECT_COMPONENT ? 0 : 5}
           sx={{
             p: 1,
             flex: 1,
             cursor: 'pointer',
+            backgroundColor: 'transparent',
           }}
           onClick={() => {
-            setMenu('inspect-component');
+            setMenu(menus.INSPECT_COMPONENT);
           }}
         >
           <Typography variant="body1">Inspect</Typography>
         </Paper>
       </Box>
-      {menu === 'components-list' && <ComponentsList />}
-      {menu === 'inspect-component' && <InspectPanel />}
+      {menu === menus.COMPONENTS_LIST && <ComponentsList />}
+      {menu === menus.INSPECT_COMPONENT && <InspectPanel />}
     </Paper>
   );
 }

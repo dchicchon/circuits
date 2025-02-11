@@ -3,8 +3,9 @@ import { modes } from './modes';
 import { CircuitLink, Links } from '@/classes/CircuitLink/CircuitLink';
 import { Node } from '@/classes/Node/Node';
 import { Drawing } from '@/classes/Drawing/Drawing';
-import { Component, Components } from '@/classes/Component/Component';
+import { Components } from '@/classes/Component/Component';
 import { AlertColor } from '@mui/material';
+import { CircuitNode, CircuitNodes } from '@/classes/CircuitNode/CircuitNode';
 
 interface State {
   drawing: Drawing | null;
@@ -12,16 +13,24 @@ interface State {
   selectedComponent: string;
   setSelectedComponent: (val: string) => void;
 
-  selected: Node | null;
-  setSelected: (node: Node | null) => void;
+  selected: string;
+  setSelected: (id: string) => void;
   hovering: string;
   setHovering: (val: string) => void;
   deleteSelectedComponent: () => void;
-  components: Components;
-  setComponents: (id: string, node: Node) => void;
+
   mode: string;
   setMode: (value: string) => void;
 
+  // COMPONENTS
+  components: Components;
+  setComponents: (id: string, node: Node) => void;
+
+  // CIRCUIT_NODES
+  nodes: CircuitNodes;
+  setNodes: (id: string, node: CircuitNode) => void;
+
+  // CIRCUIT_LINKS
   links: Links;
   setLinks: (id: string, link: CircuitLink) => void;
 
@@ -42,12 +51,8 @@ export const useStore = create<State>((set, get) => ({
   setHovering: (val: string) => set(() => ({ hovering: val })),
   drawing: null,
   setDrawing: (val: Drawing) => set(() => ({ drawing: val })),
-  components: {},
-  setComponents: () => set(() => ({})),
-  links: {},
-  setLinks: () => set(() => ({})),
-  selected: null,
-  setSelected: (node: Node | null) =>
+  selected: '',
+  setSelected: (node: string) =>
     set(() => ({
       selected: node,
     })),
@@ -55,21 +60,33 @@ export const useStore = create<State>((set, get) => ({
     // check the type of component we have.
     const drawing = get().drawing;
     const selected = get().selected;
+    const components = get().components;
+    const links = get().links;
 
-    if (selected instanceof Component) {
-      drawing?.deleteComponent(selected);
-    } else if (selected instanceof CircuitLink) {
-      drawing?.deleteLink(selected);
+    // lets check this instead?
+    const component = components[selected];
+    const link = links[selected];
+
+    if (component) {
+      drawing?.deleteComponent(component);
+    } else if (link) {
+      drawing?.deleteLink(link);
     }
   },
   mode: modes.SELECT,
   setMode: (value: string) =>
-    set(() => {
-      return {
-        mode: value,
-        selected: null,
-      };
-    }),
+    set(() => ({
+      mode: value,
+      selected: '',
+    })),
+
+  // TODO: Update setting values
+  components: {},
+  setComponents: () => set(() => ({})),
+  links: {},
+  setLinks: () => set(() => ({})),
+  nodes: {},
+  setNodes: () => set(() => ({})),
 
   //   Messaging
   openBar: false,

@@ -1,4 +1,4 @@
-import Q5 from 'q5xjs';
+import Q5 from '@/utils/qx5js';
 
 import { Node, NodeProps } from '../Node/Node';
 import { CircuitNode } from '../CircuitNode/CircuitNode';
@@ -24,20 +24,23 @@ interface ComponentData {
   [id: string]: DataObject;
 }
 
-interface ComponentProps extends NodeProps {}
+// todo: bypass this for now until we require new props
+type ComponentProps = NodeProps;
 
 // An electrical component should have subnodes
-export class Component extends Node {
+export abstract class Component extends Node {
   height: number;
   width: number;
   borderRadius: number;
-  subnodes: SubNodes;
+  nodes: SubNodes;
   img: object;
   data: ComponentData;
 
+  abstract drawSelf(): void;
+
   constructor(data: ComponentProps) {
     super(data);
-    this.subnodes = {};
+    this.nodes = {};
     this.img = {};
     this.data = {};
     this.height = 0;
@@ -48,11 +51,21 @@ export class Component extends Node {
 
   // todo: consider adding default draw function to all components?
   // todo: Make class method
-  draw() {}
+
+  draw() {
+    this.drawSelf();
+  }
+
+  setPos(pos: Q5.Vector) {
+    this.pos = pos;
+    // Object.keys(this.nodes).forEach((key) => {
+    // this.nodes[key].updatePos();
+    // });
+  }
 
   // todo: Make class method
-  drag(arg: Q5.Vector) {
-    console.log(arg);
+  drag(pos: Q5.Vector) {
+    this.setPos(pos);
   }
 
   isHovering() {
@@ -75,7 +88,7 @@ export class Component extends Node {
 
   drawSelection() {
     const selected = useStore.getState().selected;
-    if (this.id === selected?.id) {
+    if (this.id === selected) {
       this.sketch.push();
       this.sketch.noFill();
       this.sketch.rect(

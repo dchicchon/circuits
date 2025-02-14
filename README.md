@@ -1,17 +1,11 @@
 # Circuits
 
-## Summary
-
 Creating an application to develop circuit schematics for circuit study
 
 ## Stack
 
-- Typescript
-- Zustand
-- [Vite.js](https://q5xjs.netlify.app/)
-- React
-- Q5xjs
-
-## Todo
-- Consider removing delete functionality when in inspect component
-- move voltage through circuit connections
+- [typescript](https://www.typescriptlang.org/)
+- [zustand](https://zustand.docs.pmnd.rs/)
+- [vite.js](https://q5xjs.netlify.app/)
+- [react](https://react.dev/)
+- [qx5ts](https://github.com/dchicchon/q5xts)

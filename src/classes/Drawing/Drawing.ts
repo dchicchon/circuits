@@ -62,7 +62,7 @@ export class Drawing extends Q5 {
       this.stroke('white');
       this.strokeWeight(1);
     };
-    this.mouseClicked = () => {
+    this.mouseClicked = () => { 
       const mode = useStore.getState().mode;
       const hovering = useStore.getState().hovering;
       const selected = useStore.getState().selected;

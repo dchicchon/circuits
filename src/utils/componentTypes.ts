@@ -1,8 +1,5 @@
-interface Types {
-  [id: string]: string;
-}
 
-export const types: Types = {
+export const types = {
   CIRCUIT_NODE: 'CIRCUIT_NODE',
   CIRCUIT_LINK: 'CIRCUIT_LINK',
   BATTERY: 'BATTERY',

@@ -40,18 +40,18 @@ export class Light extends Component {
       type: 'cathode',
       pos: this.vector(0, this.height / -2),
     });
-  }
 
-  drawSelf() {
-    this.sketch.push();
-    this.sketch.noFill();
-    this.sketch.rect(this.pos.x, this.pos.y, this.width, this.height);
-    this.sketch.image(this.img, this.pos.x - 25, this.pos.y - 25);
-    this.sketch.pop();
-    const mode = useStore.getState().mode;
-    if (mode === modes.SELECT) {
-      this.detectHover();
-    }
-    this.drawSelection();
+    this.draw = () => {
+      this.sketch.push();
+      this.sketch.noFill();
+      this.sketch.rect(this.pos.x, this.pos.y, this.width, this.height);
+      this.sketch.image(this.img, this.pos.x - 25, this.pos.y - 25);
+      this.sketch.pop();
+      const mode = useStore.getState().mode;
+      if (mode === modes.SELECT) {
+        this.detectHover();
+      }
+      this.drawSelection();
+    };
   }
 }

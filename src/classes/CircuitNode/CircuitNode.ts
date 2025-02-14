@@ -10,7 +10,7 @@ export interface CircuitNodes {
 
 export interface CircuitNodeProps extends NodeProps {
   parentNode: Component;
-  electrodeType: 'anode' | 'cathode';
+  electrodeType?: 'anode' | 'cathode';
 }
 
 interface Links {
@@ -18,9 +18,7 @@ interface Links {
 }
 
 export class CircuitNode extends Node {
-  // CATHODE - negative
-  // ANODE - positive
-  electrodeType: 'anode' | 'cathode';
+  electrodeType?: 'anode' | 'cathode';
   diameter: number;
   parentNode: Component;
   links: Links;
@@ -41,9 +39,9 @@ export class CircuitNode extends Node {
     const drawPos = this.getPos();
     this.sketch.circle(drawPos.x, drawPos.y, this.diameter);
     if (this.electrodeType === 'cathode') {
-      this.sketch.text('+', drawPos.x - 4, drawPos.y + 3);
-    } else {
       this.sketch.text('--', drawPos.x - 4, drawPos.y + 3);
+    } else if (this.electrodeType === 'anode') {
+      this.sketch.text('+', drawPos.x - 4, drawPos.y + 3);
     }
     this.detectHover();
     this.sketch.pop();

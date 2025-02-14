@@ -6,6 +6,7 @@ import { Drawing } from '@/classes/Drawing/Drawing';
 import { Components } from '@/classes/Components/Component';
 import { AlertColor } from '@mui/material';
 import { CircuitNode, CircuitNodes } from '@/classes/CircuitNode/CircuitNode';
+import { types } from './componentTypes';
 
 interface State {
   drawing: Drawing | null;
@@ -56,8 +57,25 @@ export const useStore = create<State>((set, get) => ({
   calculateCircuit() {
     console.log('calculating circuit');
     const components = get().components;
-    const links = get().links;
-    console.log({ components, links });
+    const batteryIds = Object.keys(components).filter((key) => {
+      const component = components[key];
+      return component.type === types.BATTERY;
+    });
+
+    // we have these batterys
+    batteryIds.forEach((id) => {
+      const battery = components[id];
+      const anodeKey = Object.keys(battery.nodes).find((key) => {
+        return battery.nodes[key].electrodeType === 'anode';
+      });
+
+      // TODO: Circuit node should have a getLinkedComponent value
+      // TODO: we can dumb this down for our case to say that 
+      // TODO: nodes can only connect to 1 component
+      const anode = battery.nodes[anodeKey!];
+      const links = Object.values(anode.links)
+      console.log(links);
+    });
   },
   drawing: null,
   setDrawing: (val: Drawing) => set(() => ({ drawing: val })),

@@ -54,6 +54,7 @@ export class Drawing extends Q5 {
       if (mode !== modes.CONNECT_CIRCUIT_NODE) return;
       this.drawCircuitNodes();
     };
+
     this.setup = () => {
       this.frameRate(60);
       this.pixelDensity(window.devicePixelRatio);
@@ -62,7 +63,7 @@ export class Drawing extends Q5 {
       this.stroke('white');
       this.strokeWeight(1);
     };
-    this.mouseClicked = () => { 
+    this.mouseClicked = () => {
       const mode = useStore.getState().mode;
       const hovering = useStore.getState().hovering;
       const selected = useStore.getState().selected;

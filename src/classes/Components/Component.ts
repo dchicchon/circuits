@@ -37,7 +37,8 @@ export abstract class Component extends Node {
   img: object | undefined;
   data: ComponentData;
 
-  abstract drawSelf(): void;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  draw: Function;
 
   constructor(data: ComponentProps) {
     super(data);
@@ -46,13 +47,13 @@ export abstract class Component extends Node {
     this.data = {};
     this.height = 0;
     this.width = 0;
-
+    this.draw = () => {};
     this.borderRadius = 10;
   }
 
-  draw() {
-    this.drawSelf();
-  }
+  // draw() {
+  //   this.drawSelf();
+  // }
 
   setPos(pos: Vector) {
     this.pos = pos;
@@ -96,7 +97,7 @@ export abstract class Component extends Node {
     }
   }
 
-  addNode(data: { type: 'anode' | 'cathode'; pos: Vector }) {
+  addNode(data: { type?: 'anode' | 'cathode'; pos: Vector }) {
     const node = new CircuitNode({
       electrodeType: data.type,
       type: types.CIRCUIT_NODE,

@@ -8,8 +8,7 @@ export interface NodeProps {
   type: string;
 }
 
-// todo: set pos to private property to
-// todo cont. avoid modification
+// todo: set pos to private property to avoid modification
 export abstract class Node {
   sketch: Q5;
   pos: Vector;

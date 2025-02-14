@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "type-check": "tsc -b"
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-alpha.6",

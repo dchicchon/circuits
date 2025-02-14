@@ -12,7 +12,7 @@ export interface NodeProps {
 // todo cont. avoid modification
 export abstract class Node {
   sketch: Q5;
-  pos: null;
+  pos: Vector;
   id: string;
   type: string;
 

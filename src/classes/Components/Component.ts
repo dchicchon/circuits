@@ -1,4 +1,4 @@
-import Q5 from '@/utils/qx5js';
+import { Vector } from 'q5xts';
 
 import { Node, NodeProps } from '../Node/Node';
 import { CircuitNode } from '../CircuitNode/CircuitNode';
@@ -34,7 +34,7 @@ export abstract class Component extends Node {
   width: number;
   borderRadius: number;
   nodes: SubNodes;
-  img: object;
+  img: object | undefined;
   data: ComponentData;
 
   abstract drawSelf(): void;
@@ -54,11 +54,11 @@ export abstract class Component extends Node {
     this.drawSelf();
   }
 
-  setPos(pos: Q5.Vector) {
+  setPos(pos: Vector) {
     this.pos = pos;
   }
 
-  drag(pos: Q5.Vector) {
+  drag(pos: Vector) {
     this.setPos(pos);
   }
 
@@ -96,7 +96,7 @@ export abstract class Component extends Node {
     }
   }
 
-  addNode(data: { type: 'anode' | 'cathode'; pos: Q5.Vector }) {
+  addNode(data: { type: 'anode' | 'cathode'; pos: Vector }) {
     const node = new CircuitNode({
       electrodeType: data.type,
       type: types.CIRCUIT_NODE,

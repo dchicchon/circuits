@@ -1,20 +1,18 @@
-import Q5 from '@/utils/qx5js';
-
+import { Q5, Vector } from 'q5xts';
 import { nanoid } from 'nanoid';
 
 export interface NodeProps {
   sketch: Q5;
-  pos: Q5.Vector;
+  pos: Vector;
   data?: object;
   type: string;
 }
 
-
-// todo: set pos to private property to 
+// todo: set pos to private property to
 // todo cont. avoid modification
 export abstract class Node {
   sketch: Q5;
-  pos: Q5.Vector;
+  pos: Vector;
   id: string;
   type: string;
 
@@ -25,7 +23,7 @@ export abstract class Node {
     this.type = data.type;
   }
 
-  vector(x: number, y: number): Q5.Vector {
+  vector(x: number, y: number): Vector {
     return this.sketch.createVector(x, y);
   }
 

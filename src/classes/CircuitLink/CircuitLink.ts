@@ -67,7 +67,7 @@ export class CircuitLink extends Node {
 
   isHovering() {
     const mousePos = this.mousePos();
-    const dist = mousePos.dist(this.midpoint).toFixed(2);
+    const dist = mousePos.dist(this.midpoint)
     return dist < this.diameter / 2;
   }
 

@@ -1,4 +1,4 @@
-import Q5 from '@/utils/qx5js';
+import { Vector } from 'q5xts';
 import { Node, NodeProps } from '../Node/Node';
 import { CircuitLink } from '../CircuitLink/CircuitLink';
 import { useStore } from '@/utils/store';
@@ -58,7 +58,7 @@ export class CircuitNode extends Node {
     }
   }
 
-  getPos(): Q5.Vector {
+  getPos(): Vector {
     const parentPos = this.vector(this.parentNode.pos.x, this.parentNode.pos.y);
     return parentPos.add(this.pos);
   }
@@ -66,7 +66,7 @@ export class CircuitNode extends Node {
   isHovering(): boolean {
     const mousePos = this.mousePos();
     const drawPos = this.getPos();
-    const dist = mousePos.dist(drawPos).toFixed(2);
+    const dist = mousePos.dist(drawPos);
     return dist < this.diameter / 2;
   }
 

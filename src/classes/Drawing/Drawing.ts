@@ -1,4 +1,4 @@
-import Q5 from '@/utils/qx5js';
+import { Q5, Vector } from 'q5xts';
 
 import { Battery } from '../Components/Battery/Battery';
 import { Light } from '../Components/Light/Light';
@@ -23,70 +23,105 @@ interface createComponentProps {
 
 // we should rerun our circuit calculations any time an action is done
 // in our circuit board. Maybe we could add something to our store or in our drawing?
-export class Drawing {
+export class Drawing extends Q5 {
   components: Components;
   nodes: CircuitNodes;
   links: Links;
-  sketch: Q5;
   hovered: string;
-  mainSketch: HTMLElement | null;
   debug: boolean;
   height: number;
   width: number;
-  canvas: HTMLElement;
 
-  constructor() {
+  constructor(elm: HTMLElement) {
+    super('', elm);
     this.components = useStore.getState().components;
     this.links = useStore.getState().links;
     this.nodes = useStore.getState().nodes;
 
-    this.sketch = new Q5();
     this.setupListeners();
     this.hovered = '';
-    this.mainSketch = document.getElementById('main_sketch');
     this.debug = true;
     this.height = document.body.clientHeight;
     this.width = document.body.clientWidth;
-    this.canvas = this.sketch.createCanvas(this.width, this.height);
-    this.sketch.pixelDensity(window.devicePixelRatio);
-    if (this.mainSketch) {
-      this.mainSketch.appendChild(this.canvas);
-    }
   }
 
   setupListeners() {
-    this.sketch.draw = () => {
-      this.draw();
+    this.draw = () => {
+      this.resetDraw();
+      this.drawLinks();
+      this.drawComponents();
+      const mode = useStore.getState().mode;
+      if (mode !== modes.CONNECT_CIRCUIT_NODE) return;
+      this.drawCircuitNodes();
     };
-    this.sketch.setup = () => {
-      this.setup();
+    this.setup = () => {
+      this.frameRate(60);
+      this.pixelDensity(window.devicePixelRatio);
+      // @ts-expect-error assigned incorrectly. should fix this in package
+      this.rectMode(this.CENTER);
+      this.stroke('white');
+      this.strokeWeight(1);
     };
-    this.sketch.mouseClicked = () => {
-      this.mouseClicked();
-    };
-    this.sketch.mouseDragged = () => {
-      this.mouseDragged();
-    };
-    this.sketch.keyPressed = () => {
-      this.keyPressed();
-    };
-  }
+    this.mouseClicked = () => {
+      const mode = useStore.getState().mode;
+      const hovering = useStore.getState().hovering;
+      const selected = useStore.getState().selected;
 
-  setup() {
-    // this.sketch.frameRate(10);
-    this.sketch.rectMode(this.sketch.CENTER);
-    this.sketch.stroke('white');
-    this.sketch.strokeWeight(1);
-  }
+      // todo make selected property specific to selected type/mode
+      if (mode === modes.SELECT) {
+        if (hovering !== selected) {
+          this.selectNode(hovering);
+        } else {
+          // this.selectNode('');
+        }
+      } else if (mode === modes.CONNECT_CIRCUIT_NODE) {
+        if (selected && hovering) {
+          this.addLink(this.nodes[hovering], this.nodes[selected]);
+          this.selectNode('');
+        } else if (hovering !== selected) {
+          this.selectNode(hovering);
+        }
+      } else if (mode === modes.ADD_COMPONENT) {
+        this.addComponent();
+      }
+    };
+    this.mouseDragged = () => {
+      const mode = useStore.getState().mode;
+      // only allow drag if dragged item is type component
+      if (mode === modes.SELECT) {
+        const hovering = useStore.getState().hovering;
+        if (hovering) {
+          this.dragComponent(hovering);
+        }
+      }
+    };
+    this.keyPressed = () => {
+      const mode = useStore.getState().mode;
+      const setMode = useStore.getState().setMode;
+      const setSelectedComponent = useStore.getState().setSelectedComponent;
 
-  draw() {
-    this.resetDraw();
-    this.drawLinks();
-    this.drawComponents();
-
-    const mode = useStore.getState().mode;
-    if (mode !== modes.CONNECT_CIRCUIT_NODE) return;
-    this.drawCircuitNodes();
+      if (mode === modes.ADD_COMPONENT) {
+        const deletionCodes = [8, 27];
+        const keyCode = this.keyCode;
+        if (deletionCodes.includes(keyCode)) {
+          setSelectedComponent('');
+          setMode(modes.SELECT);
+        }
+      } else if (mode === modes.SELECT) {
+        // Todo: unable to implement if user is
+        // todo: editing value in inspect
+        // const selected = useStore.getState().selected;
+        // const deletionCodes = [8, 27];
+        // const keyCode = this.keyCode;
+        // if (deletionCodes.includes(keyCode)) {
+        //   if (selected instanceof Component) {
+        //     this.deleteComponent(selected);
+        //   } else if (selected instanceof CircuitLink) {
+        //     this.deleteLink(selected);
+        //   }
+        // }
+      }
+    };
   }
 
   drawComponents() {
@@ -111,16 +146,16 @@ export class Drawing {
   }
 
   resetDraw() {
-    this.sketch.background('#242424');
+    this.background('#242424');
     const chunkNum = 25;
     const chunkWidth = this.width / chunkNum;
     // const chunkHeight = this.height / chunkNum;
     let x = 20;
     let y = 20;
     for (let i = 0; i < chunkNum * chunkNum; i++) {
-      this.sketch.stroke('grey');
-      this.sketch.strokeWeight(3);
-      this.sketch.point(x, y);
+      this.stroke('grey');
+      this.strokeWeight(3);
+      this.point(x, y);
       x += chunkWidth;
       if (x >= this.width) {
         x = 20;
@@ -128,76 +163,13 @@ export class Drawing {
       }
     }
     // ? NEED THIS TO RESET SET HOVERED ITEM. CONSIDER REFACTORING?
-    this.sketch.cursor(this.sketch.ARROW);
+    this.cursor(this.ARROW);
     const setHovering = useStore.getState().setHovering;
     setHovering('');
   }
 
-  keyPressed() {
-    const mode = useStore.getState().mode;
-    const setMode = useStore.getState().setMode;
-    const setSelectedComponent = useStore.getState().setSelectedComponent;
-
-    if (mode === modes.ADD_COMPONENT) {
-      const deletionCodes = [8, 27];
-      const keyCode = this.sketch.keyCode;
-      if (deletionCodes.includes(keyCode)) {
-        setSelectedComponent('');
-        setMode(modes.SELECT);
-      }
-    } else if (mode === modes.SELECT) {
-      // Todo: unable to implement if user is
-      // todo: editing value in inspect
-      // const selected = useStore.getState().selected;
-      // const deletionCodes = [8, 27];
-      // const keyCode = this.sketch.keyCode;
-      // if (deletionCodes.includes(keyCode)) {
-      //   if (selected instanceof Component) {
-      //     this.deleteComponent(selected);
-      //   } else if (selected instanceof CircuitLink) {
-      //     this.deleteLink(selected);
-      //   }
-      // }
-    }
-  }
-
-  mouseClicked() {
-    const mode = useStore.getState().mode;
-    const hovering = useStore.getState().hovering;
-    const selected = useStore.getState().selected;
-
-    // todo make selected property specific to selected type/mode
-    if (mode === modes.SELECT) {
-      if (hovering !== selected) {
-        this.selectNode(hovering);
-      } else {
-        // this.selectNode('');
-      }
-    } else if (mode === modes.CONNECT_CIRCUIT_NODE) {
-      if (selected && hovering) {
-        this.addLink(this.nodes[hovering], this.nodes[selected]);
-        this.selectNode('');
-      } else if (hovering !== selected) {
-        this.selectNode(hovering);
-      }
-    } else if (mode === modes.ADD_COMPONENT) {
-      this.addComponent();
-    }
-  }
-
-  mouseDragged() {
-    const mode = useStore.getState().mode;
-    // only allow drag if dragged item is type component
-    if (mode === modes.SELECT) {
-      const hovering = useStore.getState().hovering;
-      if (hovering) {
-        this.dragComponent(hovering);
-      }
-    }
-  }
-
   dragComponent(id: string) {
-    const nextPos = this.vector(this.sketch.mouseX, this.sketch.mouseY);
+    const nextPos = this.vector(this.mouseX, this.mouseY);
     const component = this.components[id];
     if (component) {
       component.drag(nextPos);
@@ -209,18 +181,18 @@ export class Drawing {
     setSelected(id);
   }
 
-  vector(x: number, y: number): Q5.Vector {
-    return this.sketch.createVector(x, y);
+  vector(x: number, y: number): Vector {
+    return this.createVector(x, y);
   }
 
   mousePos() {
-    return this.vector(this.sketch.mouseX, this.sketch.mouseY);
+    return this.vector(this.mouseX, this.mouseY);
   }
 
   // CREATING
   createComponent(props: createComponentProps): Component {
     const defaultProps = {
-      sketch: this.sketch,
+      sketch: this,
       type: props.type,
       pos: this.mousePos(),
     };
@@ -236,7 +208,7 @@ export class Drawing {
   createLink(props: createLinkProps): CircuitLink {
     const defaultProps = {
       type: types.CIRCUIT_LINK,
-      sketch: this.sketch,
+      sketch: this,
       pos: this.mousePos(),
     };
     const { node1, node2 } = props;

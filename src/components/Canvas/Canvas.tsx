@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useStore } from '@/utils/store';
 
 import { Drawing } from '@/classes/Drawing/Drawing';
@@ -6,25 +6,23 @@ import { Drawing } from '@/classes/Drawing/Drawing';
 // import styles from './Canvas.module.css';
 
 function CanvasComp() {
+  const elm = useRef(null);
   const setDrawing = useStore((state) => state.setDrawing);
+  const drawing = useStore((state) => state.drawing);
   useEffect(() => {
     const foundCanvas = document.getElementsByTagName('canvas');
     if (foundCanvas.length === 0) {
-      const drawing = new Drawing();
+      const drawing = new Drawing(elm.current!);
       setDrawing(drawing);
     }
     return () => {
-      const main = document.getElementById('main_sketch');
-      if (main) {
-        const [...children] = main.children;
-        children.forEach((child) => {
-          main.removeChild(child);
-        });
+      if (drawing) {
+        drawing.dispose();
       }
     };
   }, []);
 
-  return <div id="main_sketch"></div>;
+  return <div ref={elm} id="main_sketch"></div>;
 }
 
 export default CanvasComp;
